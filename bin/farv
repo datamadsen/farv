@@ -262,7 +262,7 @@ get_current_theme_info() {
   # Look for pattern: $FARV_SYSTEM_THEMES/{category}/{theme}/{file}
   # or: ~/.config/farv/themes/{category}/{theme}/{file}
   local sample_link
-  sample_link=$(find "$FARV_CURRENT_LINK" -type l 2>/dev/null | head -n1)
+  sample_link=$(find "$FARV_CURRENT_LINK" -type l 2>/dev/null | grep -v "FARV_THEME_INFO" | head -n1)
   if [ -n "$sample_link" ]; then
     local target
     target=$(readlink "$sample_link")
@@ -366,6 +366,144 @@ reload_current_theme() {
 }
 
 # ----------------------------------------------------------------------------
+# Command: Theme Cycling (Next/Previous/Random)
+# ----------------------------------------------------------------------------
+
+# Helper function to get all available themes in sorted order
+get_all_themes_sorted() {
+  local themes=()
+  
+  # Get all themes and sort them
+  while IFS= read -r theme; do
+    if [[ -n "$theme" ]]; then
+      themes+=("$theme")
+    fi
+  done < <(list_themes | sort)
+  
+  printf '%s\n' "${themes[@]}"
+}
+
+# Helper function to find current theme in sorted list and get next/prev
+find_theme_in_cycle() {
+  local current_theme="$1"
+  local direction="$2" # "next" or "prev"
+  
+  local themes=()
+  readarray -t themes < <(get_all_themes_sorted)
+  
+  if [[ ${#themes[@]} -eq 0 ]]; then
+    echo "Error: No themes available" >&2
+    return 1
+  fi
+  
+  # Find current theme index
+  local current_index=-1
+  for i in "${!themes[@]}"; do
+    if [[ "${themes[$i]}" == "$current_theme" ]]; then
+      current_index=$i
+      break
+    fi
+  done
+  
+  if [[ $current_index -eq -1 ]]; then
+    echo "Error: Current theme '$current_theme' not found in available themes" >&2
+    return 1
+  fi
+  
+  # Calculate next/previous index with wrapping
+  local target_index
+  if [[ "$direction" == "next" ]]; then
+    target_index=$(( (current_index + 1) % ${#themes[@]} ))
+  else
+    target_index=$(( (current_index - 1 + ${#themes[@]}) % ${#themes[@]} ))
+  fi
+  
+  echo "${themes[$target_index]}"
+}
+
+# Function to cycle to next theme
+cycle_to_next_theme() {
+  local current_theme
+  if ! current_theme=$(get_current_theme_info); then
+    echo "No theme is currently active" >&2
+    echo "Use 'farv use <theme>' to activate a theme first" >&2
+    return 1
+  fi
+  
+  local theme_name="${current_theme%:*}"
+  local next_theme
+  if ! next_theme=$(find_theme_in_cycle "$theme_name" "next"); then
+    return 1
+  fi
+  
+  echo "Cycling from $theme_name to $next_theme"
+  use_theme_by_name "$next_theme"
+}
+
+# Function to cycle to previous theme
+cycle_to_prev_theme() {
+  local current_theme
+  if ! current_theme=$(get_current_theme_info); then
+    echo "No theme is currently active" >&2
+    echo "Use 'farv use <theme>' to activate a theme first" >&2
+    return 1
+  fi
+  
+  local theme_name="${current_theme%:*}"
+  local prev_theme
+  if ! prev_theme=$(find_theme_in_cycle "$theme_name" "prev"); then
+    return 1
+  fi
+  
+  echo "Cycling from $theme_name to $prev_theme"
+  use_theme_by_name "$prev_theme"
+}
+
+# Function to switch to random theme (excluding current)
+switch_to_random_theme() {
+  local current_theme
+  local current_theme_name=""
+  
+  # Get current theme if any (don't fail if none active)
+  if current_theme=$(get_current_theme_info 2>/dev/null); then
+    current_theme_name="${current_theme%:*}"
+  fi
+  
+  local themes=()
+  readarray -t themes < <(get_all_themes_sorted)
+  
+  if [[ ${#themes[@]} -eq 0 ]]; then
+    echo "Error: No themes available" >&2
+    return 1
+  fi
+  
+  # Remove current theme from available options
+  local available_themes=()
+  for theme in "${themes[@]}"; do
+    if [[ "$theme" != "$current_theme_name" ]]; then
+      available_themes+=("$theme")
+    fi
+  done
+  
+  if [[ ${#available_themes[@]} -eq 0 ]]; then
+    echo "Error: No other themes available" >&2
+    return 1
+  fi
+  
+  # Pick random theme
+  local random_index=$((RANDOM % ${#available_themes[@]}))
+  local random_theme="${available_themes[$random_index]}"
+  
+  if [[ -n "$current_theme_name" ]]; then
+    echo "Switching from $current_theme_name to $random_theme"
+  else
+    echo "Switching to random theme: $random_theme"
+  fi
+  
+  use_theme_by_name "$random_theme"
+}
+
+# ----------------------------------------------------------------------------
 # Command: Use
 # ----------------------------------------------------------------------------
 
@@ -378,7 +516,7 @@ apply_theme() {
   mkdir -p "$FARV_CURRENT_LINK"
 
   # 1. Clear current symlinks
-  rm -rf "${FARV_CURRENT_LINK:?}/*"
+  rm -rf "${FARV_CURRENT_LINK:?}"/*
 
   # 2. Discover all files in theme hierarchy
   local files
@@ -1121,6 +1259,9 @@ _farv_commands_only() {
         'list:List all available themes'
         'current:Show current active theme'
         'reload:Reload current active theme'
+        'next:Cycle to next theme'
+        'prev:Cycle to previous theme'
+        'random:Switch to random theme'
         'customize:Customize a theme file'
         'new:Create a new user theme'
         'clone:Clone existing local theme'
@@ -1306,7 +1447,7 @@ _farv() {
     
     # First argument - show commands only
     if [[ ${COMP_CWORD} == 1 ]]; then
-        local commands="use list current reload customize new clone pack install"
+        local commands="use list current reload next prev random customize new clone pack install"
         COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
         return 0
     fi
@@ -1387,6 +1528,9 @@ complete -c farv -f -n '__fish_is_first_token' -a 'use' -d 'Use a theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'list' -d 'List available themes'
 complete -c farv -f -n '__fish_is_first_token' -a 'current' -d 'Show current active theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'reload' -d 'Reload current active theme'
+complete -c farv -f -n '__fish_is_first_token' -a 'next' -d 'Cycle to next theme'
+complete -c farv -f -n '__fish_is_first_token' -a 'prev' -d 'Cycle to previous theme'
+complete -c farv -f -n '__fish_is_first_token' -a 'random' -d 'Switch to random theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'customize' -d 'Customize theme file'
 complete -c farv -f -n '__fish_is_first_token' -a 'new' -d 'Create new theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'clone' -d 'Clone existing theme'
@@ -1445,6 +1589,9 @@ USAGE:
     farv list [-v|--verbose]         List all available themes
     farv current [-v|--verbose]      Show current active theme
     farv reload                      Reload current active theme
+    farv next                        Cycle to next theme
+    farv prev                        Cycle to previous theme
+    farv random                      Switch to random theme
     farv new <category> <name>       Create a new user theme
     farv clone <source> [name]       Clone existing local theme
     farv customize <filename>        Copy theme file to user directory for customization
@@ -1560,6 +1707,15 @@ case "${1:-}" in
   ;;
 "reload")
   reload_current_theme
+  ;;
+"next")
+  cycle_to_next_theme
+  ;;
+"prev" | "previous")
+  cycle_to_prev_theme
+  ;;
+"random")
+  switch_to_random_theme
   ;;
 "customize")
   if [ -z "$2" ]; then
