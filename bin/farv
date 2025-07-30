@@ -40,7 +40,43 @@ source "$FARV_SYSTEM_DIR/lib/utils.sh"
 # ----------------------------------------------------------------------------
 
 # Function to discover themes with search priority
+# Function to discover themes in a category (simple output - just names)
 discover_themes() {
+  local category="$1" # light or dark
+  local themes=()
+  local seen_themes=()
+
+  # User themes first (higher priority)
+  if [ -d "$FARV_USER_THEMES/$category" ]; then
+    for theme_dir in "$FARV_USER_THEMES/$category"/*/; do
+      if [ -d "$theme_dir" ] && [ "$theme_dir" != "$FARV_USER_THEMES/$category/*/" ]; then
+        local theme_name
+        theme_name=$(basename "$theme_dir")
+        themes+=("$theme_name")
+        seen_themes+=("$theme_name")
+      fi
+    done
+  fi
+
+  # System themes second (only if not overridden by user)
+  if [ -d "$FARV_SYSTEM_THEMES/$category" ]; then
+    for theme_dir in "$FARV_SYSTEM_THEMES/$category"/*/; do
+      if [ -d "$theme_dir" ] && [ "$theme_dir" != "$FARV_SYSTEM_THEMES/$category/*/" ]; then
+        local theme_name
+        theme_name=$(basename "$theme_dir")
+        # Only add if not already found in user themes
+        if [[ ! " ${seen_themes[*]} " =~ $theme_name ]]; then
+          themes+=("$theme_name")
+        fi
+      fi
+    done
+  fi
+
+  printf '%s\n' "${themes[@]}"
+}
+
+# Function to discover themes in a category (verbose output with descriptions)
+discover_themes_verbose() {
   local category="$1" # light or dark
   local themes=()
   local seen_themes=()
@@ -261,8 +297,14 @@ get_current_active_theme() {
 
 # Function to list available themes
 list_themes() {
-  discover_themes "light"
-  discover_themes "dark"
+  local verbose="$1"
+  if [[ "$verbose" == "true" ]]; then
+    discover_themes_verbose "light"
+    discover_themes_verbose "dark"
+  else
+    discover_themes "light"
+    discover_themes "dark"
+  fi
 }
 
 # ----------------------------------------------------------------------------
@@ -1129,6 +1171,15 @@ _farv_second_arg() {
             # Complete .tar.gz files
             _files -g "*.tar.gz"
             ;;
+        list|ls)
+            # Complete list command flags
+            local -a list_flags
+            list_flags=(
+                '-v:Show verbose descriptions'
+                '--verbose:Show verbose descriptions'
+            )
+            _describe 'list options' list_flags
+            ;;
     esac
 }
 
@@ -1201,6 +1252,12 @@ _farv() {
     # Handle install subcommand - complete .tar.gz files
     if [[ ${prev} == "install" ]]; then
         COMPREPLY=( $(compgen -f -X "!*.tar.gz" -- ${cur}) )
+        return 0
+    fi
+    
+    # Handle list subcommand
+    if [[ ${prev} == "list" || ${prev} == "ls" ]]; then
+        COMPREPLY=( $(compgen -W "-v --verbose" -- ${cur}) )
         return 0
     fi
     
@@ -1356,6 +1413,10 @@ complete -c farv -f -n '__fish_seen_subcommand_from customize' -a '(__farv_compl
 # Complete .tar.gz files for install
 complete -c farv -f -n '__fish_seen_subcommand_from install' -a '*.tar.gz' -d 'Theme package'
 
+# Complete flags for list command
+complete -c farv -f -n '__fish_seen_subcommand_from list ls' -s v -d 'Show verbose descriptions'
+complete -c farv -f -n '__fish_seen_subcommand_from list ls' -l verbose -d 'Show verbose descriptions'
+
 # Standard options
 complete -c farv -s l -l list -d 'List available themes'
 complete -c farv -l help -d 'Show help'
@@ -1374,7 +1435,7 @@ farv - A  friend in rice is a friend that's nice :-)
 USAGE:
     farv use [THEME]                 Use specified theme
     farv use                         Interactive theme selection (requires fzf)
-    farv list                        List all available themes
+    farv list [-v|--verbose]         List all available themes
     farv new <category> <name>       Create a new user theme
     farv clone <source> [name]       Clone existing local theme
     farv customize <filename>        Copy theme file to user directory for customization
@@ -1437,7 +1498,30 @@ case "${1:-}" in
   esac
   ;;
 "list" | "ls")
-  list_themes
+  verbose="false"
+  
+  # Parse arguments for list command
+  shift
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+    -v|--verbose)
+      verbose="true"
+      shift
+      ;;
+    -*)
+      echo "Error: Unknown option '$1'"
+      echo "Usage: farv list [-v|--verbose]"
+      exit 1
+      ;;
+    *)
+      echo "Error: Unexpected argument '$1'"
+      echo "Usage: farv list [-v|--verbose]"
+      exit 1
+      ;;
+    esac
+  done
+  
+  list_themes "$verbose"
   ;;
 "customize")
   if [ -z "$2" ]; then
