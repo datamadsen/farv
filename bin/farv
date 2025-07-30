@@ -308,6 +308,43 @@ list_themes() {
 }
 
 # ----------------------------------------------------------------------------
+# Command: Current
+# ----------------------------------------------------------------------------
+
+# Function to show current active theme
+show_current_theme() {
+  local verbose="$1"
+  local current_theme
+  
+  if ! current_theme=$(get_current_theme_info); then
+    echo "No theme is currently active" >&2
+    echo "Use 'farv use <theme>' to activate a theme" >&2
+    return 1
+  fi
+  
+  local theme_name="${current_theme%:*}"
+  local theme_category="${current_theme#*:}"
+  
+  if [[ "$verbose" == "true" ]]; then
+    # Check if it's a user theme or system theme and if customized
+    local user_theme_dir="$FARV_USER_THEMES/$theme_category/$theme_name"
+    local system_theme_dir="$FARV_SYSTEM_THEMES/$theme_category/$theme_name"
+    
+    if [[ -d "$user_theme_dir" ]]; then
+      if [[ -d "$system_theme_dir" ]]; then
+        echo "$theme_name (customized $theme_category system theme)"
+      else
+        echo "$theme_name ($theme_category user theme)"
+      fi
+    else
+      echo "$theme_name ($theme_category system theme)"
+    fi
+  else
+    echo "$theme_name"
+  fi
+}
+
+# ----------------------------------------------------------------------------
 # Command: Use
 # ----------------------------------------------------------------------------
 
@@ -1061,6 +1098,7 @@ _farv_commands_only() {
     commands=(
         'use:Use a theme'
         'list:List all available themes'
+        'current:Show current active theme'
         'customize:Customize a theme file'
         'new:Create a new user theme'
         'clone:Clone existing local theme'
@@ -1180,6 +1218,15 @@ _farv_second_arg() {
             )
             _describe 'list options' list_flags
             ;;
+        current)
+            # Complete current command flags
+            local -a current_flags
+            current_flags=(
+                '-v:Show verbose descriptions'
+                '--verbose:Show verbose descriptions'
+            )
+            _describe 'current options' current_flags
+            ;;
     esac
 }
 
@@ -1261,9 +1308,15 @@ _farv() {
         return 0
     fi
     
+    # Handle current subcommand
+    if [[ ${prev} == "current" ]]; then
+        COMPREPLY=( $(compgen -W "-v --verbose" -- ${cur}) )
+        return 0
+    fi
+    
     # First argument - show commands only
     if [[ ${COMP_CWORD} == 1 ]]; then
-        local commands="use list customize new clone pack install"
+        local commands="use list current customize new clone pack install"
         COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
         return 0
     fi
@@ -1363,6 +1416,7 @@ __farv_setup_theme_completions_for_use
 # Commands only at top level
 complete -c farv -f -n '__fish_is_first_token' -a 'use' -d 'Use a theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'list' -d 'List available themes'
+complete -c farv -f -n '__fish_is_first_token' -a 'current' -d 'Show current active theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'customize' -d 'Customize theme file'
 complete -c farv -f -n '__fish_is_first_token' -a 'new' -d 'Create new theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'clone' -d 'Clone existing theme'
@@ -1417,6 +1471,10 @@ complete -c farv -f -n '__fish_seen_subcommand_from install' -a '*.tar.gz' -d 'T
 complete -c farv -f -n '__fish_seen_subcommand_from list ls' -s v -d 'Show verbose descriptions'
 complete -c farv -f -n '__fish_seen_subcommand_from list ls' -l verbose -d 'Show verbose descriptions'
 
+# Complete flags for current command
+complete -c farv -f -n '__fish_seen_subcommand_from current' -s v -d 'Show verbose descriptions'
+complete -c farv -f -n '__fish_seen_subcommand_from current' -l verbose -d 'Show verbose descriptions'
+
 # Standard options
 complete -c farv -s l -l list -d 'List available themes'
 complete -c farv -l help -d 'Show help'
@@ -1436,6 +1494,7 @@ USAGE:
     farv use [THEME]                 Use specified theme
     farv use                         Interactive theme selection (requires fzf)
     farv list [-v|--verbose]         List all available themes
+    farv current [-v|--verbose]      Show current active theme
     farv new <category> <name>       Create a new user theme
     farv clone <source> [name]       Clone existing local theme
     farv customize <filename>        Copy theme file to user directory for customization
@@ -1522,6 +1581,32 @@ case "${1:-}" in
   done
   
   list_themes "$verbose"
+  ;;
+"current")
+  verbose="false"
+  
+  # Parse arguments for current command
+  shift
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+    -v|--verbose)
+      verbose="true"
+      shift
+      ;;
+    -*)
+      echo "Error: Unknown option '$1'"
+      echo "Usage: farv current [-v|--verbose]"
+      exit 1
+      ;;
+    *)
+      echo "Error: Unexpected argument '$1'"
+      echo "Usage: farv current [-v|--verbose]"
+      exit 1
+      ;;
+    esac
+  done
+  
+  show_current_theme "$verbose"
   ;;
 "customize")
   if [ -z "$2" ]; then
