@@ -66,16 +66,26 @@ $SUDO_CMD chmod +x "$BIN_DIR/farv"
 
 # Create system directories
 echo "[farv] Creating system directories"
-$SUDO_CMD mkdir -p "$SHARE_DIR/farv/themes/{light,dark}"
+$SUDO_CMD mkdir -p "$SHARE_DIR/farv/themes/light"
+$SUDO_CMD mkdir -p "$SHARE_DIR/farv/themes/dark"
 $SUDO_CMD mkdir -p "$SHARE_DIR/farv/lib"
 
 # Install system themes
 echo "[farv] Installing system themes"
-if [ -d "themes/light" ]; then
-  $SUDO_CMD cp -r themes/light/* "$SHARE_DIR/farv/themes/light/" 2>/dev/null || true
-fi
-if [ -d "themes/dark" ]; then
-  $SUDO_CMD cp -r themes/dark/* "$SHARE_DIR/farv/themes/dark/" 2>/dev/null || true
+if [ -d "themes" ]; then
+  # Copy theme directories
+  if [ -d "themes/light" ]; then
+    $SUDO_CMD cp -r themes/light/* "$SHARE_DIR/farv/themes/light/" 2>/dev/null || true
+  fi
+  if [ -d "themes/dark" ]; then
+    $SUDO_CMD cp -r themes/dark/* "$SHARE_DIR/farv/themes/dark/" 2>/dev/null || true
+  fi
+  # Copy global theme files (not in light/dark subdirectories)
+  for file in themes/*; do
+    if [ -f "$file" ]; then
+      $SUDO_CMD cp "$file" "$SHARE_DIR/farv/themes/" 2>/dev/null || true
+    fi
+  done
 fi
 
 # Install utility library
