@@ -173,6 +173,67 @@ list_current_theme_files() {
   fi
 }
 
+# Function to validate theme name
+validate_theme_name() {
+  local name="$1"
+  # Check for empty name
+  [[ -n "$name" ]] || return 1
+  # Check for valid characters (letters, numbers, hyphens, underscores)
+  [[ "$name" =~ ^[a-zA-Z0-9_-]+$ ]] || return 1
+  # Check length (reasonable limit)
+  [[ ${#name} -le 50 ]] || return 1
+  return 0
+}
+
+# Function to create a new theme
+create_new_theme() {
+  local theme_name="$1"
+  local category="$2"
+  
+  # Validate theme name
+  if ! validate_theme_name "$theme_name"; then
+    echo "Error: Invalid theme name '$theme_name'"
+    echo "Theme names must contain only letters, numbers, hyphens, and underscores"
+    return 1
+  fi
+  
+  # Validate category
+  if [[ "$category" != "light" && "$category" != "dark" ]]; then
+    echo "Error: Category must be 'light' or 'dark'"
+    return 1
+  fi
+  
+  # Check if theme already exists in user directory
+  local target_dir="$FARV_USER_THEMES/$category/$theme_name"
+  if [[ -d "$target_dir" ]]; then
+    echo "Error: Theme '$theme_name' already exists in $category category (user)"
+    echo "Location: $target_dir"
+    return 1
+  fi
+  
+  # Check if theme already exists in system directory
+  local system_dir="$FARV_SYSTEM_THEMES/$category/$theme_name"
+  if [[ -d "$system_dir" ]]; then
+    echo "Error: Theme '$theme_name' already exists in $category category (system)"
+    echo "Location: $system_dir"
+    echo "Choose a different name or use 'farv customize <filename>' to modify the existing theme"
+    return 1
+  fi
+  
+  # Create empty directory
+  mkdir -p "$target_dir"
+  
+  echo "Created new theme: $theme_name ($category)"
+  echo "Location: $target_dir"
+  echo ""
+  echo "Next steps:"
+  echo "  1. Add configuration files to $target_dir"
+  echo "  2. Test with: farv $theme_name"
+  echo ""
+  echo "Note: Any executable files in the theme directory will be run when"
+  echo "      switching to this theme. Use this for custom setup and reload scripts."
+}
+
 # Function to customize a theme file
 customize_theme_file() {
   local filename="$1"
@@ -384,7 +445,8 @@ _farv() {
 
     _arguments -C \
         '1: :_farv_commands_and_themes' \
-        '2: :_farv_customize_files' \
+        '2: :_farv_second_arg' \
+        '3: :_farv_third_arg' \
         '*::arg:->args'
 }
 
@@ -393,6 +455,7 @@ _farv_commands_and_themes() {
     themes_and_commands=(
         'list:List all available themes'
         'customize:Customize a theme file'
+        'new:Create a new user theme'
     )
     # Add themes with proper descriptions
     while IFS= read -r line; do
@@ -435,18 +498,36 @@ _farv_commands_and_themes() {
     _describe 'themes and commands' themes_and_commands
 }
 
-_farv_customize_files() {
-    # Only show files if first argument is customize
-    if [[ "$words[2]" == "customize" ]]; then
-        local -a current_files
-        if [[ -d "$HOME/.config/farv/current" ]]; then
-            for file in "$HOME/.config/farv/current"/*; do
-                if [[ -L "$file" ]]; then
-                    current_files+=("$(basename "$file"):theme file")
-                fi
-            done
-        fi
-        _describe 'current theme files' current_files
+_farv_second_arg() {
+    case $words[2] in
+        customize)
+            # Show current theme files for customize
+            local -a current_files
+            if [[ -d "$HOME/.config/farv/current" ]]; then
+                for file in "$HOME/.config/farv/current"/*; do
+                    if [[ -L "$file" ]]; then
+                        current_files+=("$(basename "$file"):theme file")
+                    fi
+                done
+            fi
+            _describe 'current theme files' current_files
+            ;;
+        new)
+            # Show categories for new command
+            local -a categories
+            categories=(
+                'light:Create light theme'
+                'dark:Create dark theme'
+            )
+            _describe 'categories' categories
+            ;;
+    esac
+}
+
+_farv_third_arg() {
+    if [[ $words[2] == "new" && ($words[3] == "light" || $words[3] == "dark") ]]; then
+        # Third argument after "farv new [category]" - allow free text for theme name
+        return 0
     fi
 }
 
@@ -473,16 +554,29 @@ _farv() {
         return 0
     fi
     
+    # Handle new subcommand
+    if [[ ${prev} == "new" ]]; then
+        # Complete with categories (required)
+        COMPREPLY=( $(compgen -W "light dark" -- ${cur}) )
+        return 0
+    fi
+    
+    # Handle new subcommand with category already specified
+    if [[ ${COMP_CWORD} == 3 && ${COMP_WORDS[1]} == "new" && (${COMP_WORDS[2]} == "light" || ${COMP_WORDS[2]} == "dark") ]]; then
+        # Third argument after "farv new [category]" - no completion, user types theme name
+        return 0
+    fi
+    
     if [[ ${cur} == -* ]]; then
         opts="--help -h --generate-completion list ls customize"
         COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
         return 0
     fi
     
-    # First argument - include customize as option along with themes
+    # First argument - include new and customize as options along with themes
     if [[ ${COMP_CWORD} == 1 ]]; then
         local themes=$(farv list 2>/dev/null | sed 's/ (light).*//; s/ (dark).*//')
-        local commands="list customize"
+        local commands="list customize new"
         COMPREPLY=( $(compgen -W "${themes} ${commands}" -- ${cur}) )
         return 0
     fi
@@ -586,6 +680,10 @@ __farv_setup_theme_completions
 
 complete -c farv -f -n '__fish_is_first_token' -a 'list' -d 'List available themes'
 complete -c farv -f -n '__fish_is_first_token' -a 'customize' -d 'Customize theme file'
+complete -c farv -f -n '__fish_is_first_token' -a 'new' -d 'Create new theme'
+
+# Complete categories after 'new'
+complete -c farv -f -n '__fish_seen_subcommand_from new; and test (count (commandline -opc)) -eq 2' -a 'light dark'
 
 # Complete current theme files for customize command
 complete -c farv -f -n '__fish_seen_subcommand_from customize' -a '(__farv_complete_current_files)' -d 'Current theme files'
@@ -605,6 +703,7 @@ USAGE:
     farv [THEME]                     Switch to specified theme
     farv                             Interactive theme selection (requires fzf)
     farv list                        List all available themes
+    farv new <category> <name>       Create a new user theme
     farv customize <filename>        Copy theme file to user directory for customization
     farv --help                      Show this help message
     farv --generate-completion SHELL Generate completion script for shell
@@ -612,9 +711,18 @@ USAGE:
 EXAMPLES:
     farv rose-pine-dawn              Switch to rose-pine-dawn theme
     farv "tokyonight-night (dark)"   Switch using full theme name with category
+    farv new dark my-theme           Create new dark theme
+    farv new light my-theme          Create new light theme
     farv customize btop.theme        Copy btop.theme to user directory for editing
     farv list                        Show all available themes
     farv                             Open interactive theme selector
+
+NEW THEME CREATION:
+    After running 'farv new <category> <name>', add configuration files to:
+    ~/.config/farv/themes/{category}/{name}/
+    
+    Use 'farv customize <filename>' to copy files from current theme
+    as a starting point for your new theme.
 
 CUSTOMIZATION:
     After running 'farv customize <filename>', edit the file at:
@@ -660,6 +768,29 @@ case "${1:-}" in
     exit 1
   fi
   customize_theme_file "$2"
+  ;;
+"new")
+  if [ -z "$2" ] || [ -z "$3" ]; then
+    echo "Usage: farv new <category> <theme_name>"
+    echo ""
+    echo "Examples:"
+    echo "  farv new light my-theme"
+    echo "  farv new dark my-theme"
+    exit 1
+  fi
+  
+  # Parse arguments - category is required as first argument
+  category="$2"
+  theme_name="$3"
+  
+  # Validate category
+  if [[ "$category" != "light" && "$category" != "dark" ]]; then
+    echo "Error: Invalid category '$category'. Category must be 'light' or 'dark'"
+    echo "Usage: farv new <category> <theme_name>"
+    exit 1
+  fi
+  
+  create_new_theme "$theme_name" "$category"
   ;;
 "")
   interactive_selection
