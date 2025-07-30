@@ -12,7 +12,7 @@ if ! pgrep -x swaybg &>/dev/null; then
 fi
 
 # Look for wallpaper files in the current theme directory
-THEME_DIR="$(dirname "$1")"/current
+THEME_DIR="$XDG_CONFIG_HOME/farv/current"
 WALLPAPER=""
 
 if [[ -f "$THEME_DIR/wallpaper.jpg" ]]; then
