@@ -189,20 +189,20 @@ validate_theme_name() {
 create_new_theme() {
   local theme_name="$1"
   local category="$2"
-  
+
   # Validate theme name
   if ! validate_theme_name "$theme_name"; then
     echo "Error: Invalid theme name '$theme_name'"
     echo "Theme names must contain only letters, numbers, hyphens, and underscores"
     return 1
   fi
-  
+
   # Validate category
   if [[ "$category" != "light" && "$category" != "dark" ]]; then
     echo "Error: Category must be 'light' or 'dark'"
     return 1
   fi
-  
+
   # Check if theme already exists in user directory
   local target_dir="$FARV_USER_THEMES/$category/$theme_name"
   if [[ -d "$target_dir" ]]; then
@@ -210,7 +210,7 @@ create_new_theme() {
     echo "Location: $target_dir"
     return 1
   fi
-  
+
   # Check if theme already exists in system directory
   local system_dir="$FARV_SYSTEM_THEMES/$category/$theme_name"
   if [[ -d "$system_dir" ]]; then
@@ -219,10 +219,10 @@ create_new_theme() {
     echo "Choose a different name or use 'farv customize <filename>' to modify the existing theme"
     return 1
   fi
-  
+
   # Create empty directory
   mkdir -p "$target_dir"
-  
+
   echo "Created new theme: $theme_name ($category)"
   echo "Location: $target_dir"
   echo ""
@@ -238,7 +238,7 @@ create_new_theme() {
 customize_theme_file() {
   local filename="$1"
   local current_symlink="$FARV_CONFIG_HOME/current/$filename"
-  
+
   # Validate symlink exists
   if [ ! -L "$current_symlink" ]; then
     echo "Error: File '$filename' is not part of the current theme"
@@ -246,24 +246,24 @@ customize_theme_file() {
     list_current_theme_files
     return 1
   fi
-  
+
   # Get source file path
   local source_path=$(readlink "$current_symlink")
-  
+
   # Determine current theme info
   local theme_info=$(get_current_theme_info)
   if [ -z "$theme_info" ]; then
     echo "Error: Could not determine current theme information"
     return 1
   fi
-  
+
   local theme_name=$(echo "$theme_info" | cut -d: -f1)
   local theme_category=$(echo "$theme_info" | cut -d: -f2)
-  
+
   # Create target directory
   local target_dir="$FARV_USER_THEMES/$theme_category/$theme_name"
   mkdir -p "$target_dir"
-  
+
   # Copy file
   local target_path="$target_dir/$filename"
   if [ -f "$target_path" ]; then
@@ -272,14 +272,14 @@ customize_theme_file() {
     echo
     [[ ! $REPLY =~ ^[Yy]$ ]] && return 1
   fi
-  
+
   if ! cp "$source_path" "$target_path"; then
     echo "Error: Failed to copy file to $target_path"
     return 1
   fi
-  
+
   echo "Copied $filename to $target_path"
-  
+
   # Re-apply theme to update symlinks
   echo "Updating theme symlinks..."
   apply_theme "$theme_name" "$theme_category"
@@ -731,15 +731,6 @@ CUSTOMIZATION:
     ~/.config/farv/themes/{category}/{theme}/{filename}
     
     The next time you apply the theme, your custom version will be used.
-
-COMPLETION SETUP:
-    # Automatic (recommended)
-    Run the installer which detects your shell and sets up completion
-
-    # Manual setup
-    farv --generate-completion zsh > ~/.local/share/zsh/site-functions/_farv
-    farv --generate-completion bash > ~/.bash_completion.d/farv
-    farv --generate-completion fish > ~/.config/fish/completions/farv.fish
 EOF
 }
 
@@ -780,18 +771,18 @@ case "${1:-}" in
     echo "  farv new dark my-theme"
     exit 1
   fi
-  
+
   # Parse arguments - category is required as first argument
   category="$2"
   theme_name="$3"
-  
+
   # Validate category
   if [[ "$category" != "light" && "$category" != "dark" ]]; then
     echo "Error: Invalid category '$category'. Category must be 'light' or 'dark'"
     echo "Usage: farv new <category> <theme_name>"
     exit 1
   fi
-  
+
   create_new_theme "$theme_name" "$category"
   ;;
 "use")
