@@ -400,30 +400,30 @@ _farv_commands_and_themes() {
             # Parse theme line to extract theme name and create description
             if [[ "$line" == *" (light)"* ]]; then
                 local theme_name="${line%% \(light\)*}"
-                local description="light theme"
+                local description
                 if [[ "$line" == *"[user]" ]]; then
                     # Check if system theme also exists
                     if [[ -d "/usr/share/farv/themes/light/$theme_name" ]]; then
-                        description="${description} (customized system)"
+                        description="customized light system theme"
                     else
-                        description="${description} (user)"
+                        description="light user theme"
                     fi
                 else
-                    description="${description} (system)"
+                    description="light system theme"
                 fi
                 themes_and_commands+=("${theme_name}:${description}")
             elif [[ "$line" == *" (dark)"* ]]; then
                 local theme_name="${line%% \(dark\)*}"
-                local description="dark theme"
+                local description
                 if [[ "$line" == *"[user]" ]]; then
                     # Check if system theme also exists
                     if [[ -d "/usr/share/farv/themes/dark/$theme_name" ]]; then
-                        description="${description} (customized system)"
+                        description="customized dark system theme"
                     else
-                        description="${description} (user)"
+                        description="dark user theme"
                     fi
                 else
-                    description="${description} (system)"
+                    description="dark system theme"
                 fi
                 themes_and_commands+=("${theme_name}:${description}")
             else
@@ -505,21 +505,34 @@ end
 
 function __farv_complete_themes_with_desc
     farv list 2>/dev/null | while read -l line
-        if string match -qr '^(.+) \((light|dark)\)( \[user\])?$' -- "$line"
-            set theme_name (string replace -r '^(.+) \(.*\).*$' '$1' -- "$line")
-            set category (string replace -r '^.+ \((light|dark)\).*$' '$1' -- "$line")
-            set user_marker (string replace -r '^.+ \((light|dark)\)( \[user\])?.*$' '$2' -- "$line")
-            if test "$user_marker" = " [user]"
-                # Check if system theme also exists
-                if test -d "/usr/share/farv/themes/$category/$theme_name"
-                    echo "$theme_name\t$category theme (customized system)"
+        # Parse light themes
+        if string match -q '* (light)*' -- "$line"
+            set theme_name (string replace -r ' \(light\).*$' '' -- "$line")
+            if string match -q '*[user]*' -- "$line"
+                if test -d "/usr/share/farv/themes/light/$theme_name"
+                    set description "customized light system theme"
                 else
-                    echo "$theme_name\t$category theme (user)"
+                    set description "light user theme"
                 end
             else
-                echo "$theme_name\t$category theme (system)"
+                set description "light system theme"
             end
+            printf "%s\t%s\n" "$theme_name" "$description"
+        # Parse dark themes
+        else if string match -q '* (dark)*' -- "$line"
+            set theme_name (string replace -r ' \(dark\).*$' '' -- "$line")
+            if string match -q '*[user]*' -- "$line"
+                if test -d "/usr/share/farv/themes/dark/$theme_name"
+                    set description "customized dark system theme"
+                else
+                    set description "dark user theme"
+                end
+            else
+                set description "dark system theme"
+            end
+            printf "%s\t%s\n" "$theme_name" "$description"
         else
+            # Fallback
             echo "$line"
         end
     end
@@ -536,7 +549,41 @@ function __farv_complete_current_files
 end
 
 # Complete themes and commands for first argument
-complete -c farv -f -n '__fish_is_first_token' -a '(__farv_complete_themes_with_desc)'
+# Generate individual complete commands for each theme
+function __farv_setup_theme_completions
+    farv list 2>/dev/null | while read -l line
+        # Parse light themes
+        if string match -q '* (light)*' -- "$line"
+            set theme_name (string replace -r ' \(light\).*$' '' -- "$line")
+            if string match -q '*[user]*' -- "$line"
+                if test -d "/usr/share/farv/themes/light/$theme_name"
+                    set description "customized light system theme"
+                else
+                    set description "light user theme"
+                end
+            else
+                set description "light system theme"
+            end
+            complete -c farv -f -n '__fish_is_first_token' -a "$theme_name" -d "$description"
+        # Parse dark themes
+        else if string match -q '* (dark)*' -- "$line"
+            set theme_name (string replace -r ' \(dark\).*$' '' -- "$line")
+            if string match -q '*[user]*' -- "$line"
+                if test -d "/usr/share/farv/themes/dark/$theme_name"
+                    set description "customized dark system theme"
+                else
+                    set description "dark user theme"
+                end
+            else
+                set description "dark system theme"
+            end
+            complete -c farv -f -n '__fish_is_first_token' -a "$theme_name" -d "$description"
+        end
+    end
+end
+
+__farv_setup_theme_completions
+
 complete -c farv -f -n '__fish_is_first_token' -a 'list' -d 'List available themes'
 complete -c farv -f -n '__fish_is_first_token' -a 'customize' -d 'Customize theme file'
 
