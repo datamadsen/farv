@@ -345,6 +345,27 @@ show_current_theme() {
 }
 
 # ----------------------------------------------------------------------------
+# Command: Reload
+# ----------------------------------------------------------------------------
+
+# Function to reload current active theme
+reload_current_theme() {
+  local current_theme
+  
+  if ! current_theme=$(get_current_theme_info); then
+    echo "No theme is currently active" >&2
+    echo "Use 'farv use <theme>' to activate a theme first" >&2
+    return 1
+  fi
+  
+  local theme_name="${current_theme%:*}"
+  local theme_category="${current_theme#*:}"
+  
+  echo "Reloading current theme: $theme_name ($theme_category)"
+  apply_theme "$theme_name" "$theme_category"
+}
+
+# ----------------------------------------------------------------------------
 # Command: Use
 # ----------------------------------------------------------------------------
 
@@ -1099,6 +1120,7 @@ _farv_commands_only() {
         'use:Use a theme'
         'list:List all available themes'
         'current:Show current active theme'
+        'reload:Reload current active theme'
         'customize:Customize a theme file'
         'new:Create a new user theme'
         'clone:Clone existing local theme'
@@ -1284,7 +1306,7 @@ _farv() {
     
     # First argument - show commands only
     if [[ ${COMP_CWORD} == 1 ]]; then
-        local commands="use list current customize new clone pack install"
+        local commands="use list current reload customize new clone pack install"
         COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
         return 0
     fi
@@ -1364,6 +1386,7 @@ __farv_setup_theme_completions_for_use
 complete -c farv -f -n '__fish_is_first_token' -a 'use' -d 'Use a theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'list' -d 'List available themes'
 complete -c farv -f -n '__fish_is_first_token' -a 'current' -d 'Show current active theme'
+complete -c farv -f -n '__fish_is_first_token' -a 'reload' -d 'Reload current active theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'customize' -d 'Customize theme file'
 complete -c farv -f -n '__fish_is_first_token' -a 'new' -d 'Create new theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'clone' -d 'Clone existing theme'
@@ -1421,6 +1444,7 @@ USAGE:
     farv use                         Interactive theme selection (requires fzf)
     farv list [-v|--verbose]         List all available themes
     farv current [-v|--verbose]      Show current active theme
+    farv reload                      Reload current active theme
     farv new <category> <name>       Create a new user theme
     farv clone <source> [name]       Clone existing local theme
     farv customize <filename>        Copy theme file to user directory for customization
@@ -1533,6 +1557,9 @@ case "${1:-}" in
   done
   
   show_current_theme "$verbose"
+  ;;
+"reload")
+  reload_current_theme
   ;;
 "customize")
   if [ -z "$2" ]; then
