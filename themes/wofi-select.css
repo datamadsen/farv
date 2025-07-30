@@ -1,0 +1,8 @@
+@import url(".config/farv/current/wofi-colors.css");
+@import url(".config/farv/current/wofi-search.css");
+
+#input {
+    display: none;
+    opacity: 0;
+    margin-top: -200px;
+}
