@@ -8,14 +8,14 @@ if pgrep -x ghostty &>/dev/null; then
 
     # Focus each ghostty window and send reload key combo
     while IFS= read -r address; do
-      hyprctl dispatch focuswindow "address:$address"
+      hyprctl dispatch focuswindow "address:$address" >/dev/null
       sleep 0.1
-      hyprctl dispatch sendshortcut "CTRL SHIFT, comma, address:$address"
+      hyprctl dispatch sendshortcut "CTRL SHIFT, comma, address:$address" >/dev/null
     done <<<"$ghostty_addresses"
 
     # Return focus to original window
     if [[ -n "$current_window" ]]; then
-      hyprctl dispatch focuswindow "address:$current_window"
+      hyprctl dispatch focuswindow "address:$current_window" >/dev/null
     fi
   fi
 fi
