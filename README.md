@@ -1,347 +1,248 @@
-# farv - A friend in rice is a friend that's nice :-)
+# farv
 
-A comprehensive theme management system for Linux desktop environments that
-provides unified theming across multiple applications and system components.
+**A friend in rice is a friend that's nice**
 
-## Overview
+farv is a layered theme management system that lets you build and switch
+between complete desktop themes using a powerful hierarchy concept.
 
-**farv** is a hierarchical theme management system designed for "rice"
-enthusiasts - users who customize their Linux desktop environments. It
-provides a unified way to switch between complete theme configurations that can
-affect multiple applications simultaneously, including terminal emulators,
-window managers, status bars, and system UI components.
+## The Layer Concept
 
-### Key Features
+Think of farv themes like transparent sheets stacked on top of each other.
+When you look down through the stack, you see the top-most visible element
+at each position. This is exactly how farv resolves your theme files.
 
-- **Hierarchical Theme System**: Themes are organized with inheritance and
-  layering support
-- **Multi-Application Support**: Single command affects multiple applications
-  (alacritty, ghostty, waybar, hyprland, etc.)
-- **User/System Theme Separation**: System-wide themes with user override
-  capability
-- **Interactive Selection**: Built-in fzf integration for easy theme browsing
-- **Shell Completion**: Auto-completion support for bash, zsh, and fish
-- **XDG Compliance**: Follows XDG Base Directory specification
+### How Layers Work
 
-## Architecture
-
-### Directory Structure
+When you apply a theme like `tokyonight-night`, farv searches through
+multiple layers in priority order to find each configuration file:
 
 ```
-/usr/share/farv/                    # System installation
-├── themes/
-│   ├── light/                      # Light theme category
-│   │   └── rose-pine-dawn/         # Individual theme
-│   │       ├── alacritty.toml      # Application config files
-│   │       ├── hyprland.conf
-│   │       ├── waybar.css
-│   │       └── background.png
-│   └── dark/                       # Dark theme category
-│       └── tokyonight-night/
-│           ├── alacritty.toml
-│           ├── ghostty
-│           └── ...
-└── lib/
-    └── utils.sh                    # Utility functions
-
-~/.config/farv/                     # User configuration
-├── themes/                         # User custom themes
-│   ├── light/
-│   └── dark/
-├── current/                        # Symlinks to active theme files
-└── config                          # User configuration file
+Priority  Layer                           Example Path
+   1      User theme-specific             ~/.config/farv/themes/dark/tokyonight-night/
+   2      System theme-specific           /usr/share/farv/themes/dark/tokyonight-night/
+   3      User category-level             ~/.config/farv/themes/dark/
+   4      System category-level           /usr/share/farv/themes/dark/
+   5      User global                     ~/.config/farv/themes/
+   6      System global                   /usr/share/farv/themes/
 ```
 
-### Theme Resolution Priority
+For each file (like `alacritty.toml`), farv takes the first one it finds,
+creating a symbolic link from `~/.config/farv/current/alacritty.toml` to
+that file.
 
-farv uses a layered resolution system where files are resolved in priority
-order:
+### Why This Matters
 
-1. **User theme-specific** (`~/.config/farv/themes/{category}/{theme}/`)
-2. **System theme-specific** (`/usr/share/farv/themes/{category}/{theme}/`)
-3. **User category-level** (`~/.config/farv/themes/{category}/`)
-4. **System category-level** (`/usr/share/farv/themes/{category}/`)
-5. **User global** (`~/.config/farv/themes/`)
-6. **System global** (`/usr/share/farv/themes/`)
+This layering system gives you incredible flexibility:
 
-This allows users to override specific files from system themes or create
-partial themes that inherit most files from parent layers.
+**Override specific files**: Want to use `tokyonight-night` but with your
+own wallpaper? Just put `wallpaper.png` in your user theme directory.
+farv will use your wallpaper but inherit everything else from the system
+theme.
 
-## Installation
+**Share common settings**: Put files that work across multiple themes
+in category-level directories. All your dark themes can share the same
+`gtk.sh` script, while light themes use a different one.
 
-### System-wide Installation
+**Personal defaults**: Files in your global user directory (`~/.config/farv/themes/`)
+act as fallbacks for any theme that doesn't specify them.
+
+### A Practical Example
+
+Let's say you want to customize the popular `rose-pine-dawn` theme:
+
+```
+# System provides the base theme
+/usr/share/farv/themes/light/rose-pine-dawn/
+├── alacritty.toml
+├── waybar.css
+├── hyprland.conf
+└── wallpaper.png
+
+# You add personal touches
+~/.config/farv/themes/light/rose-pine-dawn/
+├── wallpaper.png          # Your custom wallpaper
+└── tmux.conf              # Your tmux config
+
+# You share settings across all light themes
+~/.config/farv/themes/light/
+└── gtk.sh                 # Light GTK theme script
+```
+
+When you run `farv use rose-pine-dawn`, you get:
+
+- Your custom wallpaper (layer 1)
+- Your tmux config (layer 1)
+- System's alacritty, waybar, hyprland configs (layer 2)
+- Your light GTK script (layer 3)
+
+## Quick Start
+
+### List available themes
 
 ```bash
-# Clone the repository
-git clone <repository-url> farv
-cd farv
-
-# Install system-wide (requires sudo)
-./install-system.sh
-```
-
-This installs:
-- Binary to `/usr/bin/farv`
-- System themes to `/usr/share/farv/themes/`
-- Shell completions to system locations
-- Creates user config directory at `~/.config/farv/`
-
-### Manual Installation
-
-Copy `bin/farv` to a directory in your `$PATH` and ensure the required
-directory structure exists.
-
-## Usage
-
-### Basic Commands
-
-```bash
-# List all available themes
 farv list
-
-# Switch to a specific theme
-farv rose-pine-dawn
-farv tokyonight-night
-
-# Interactive theme selection (requires fzf)
-farv
-
-# Show help
-farv --help
 ```
 
-### Theme Format Examples
+### Use a theme
 
 ```bash
-# Theme names as shown by 'farv list'
-rose-pine-dawn (light)              # System theme
-tokyonight-night (dark) [user]      # User theme
+farv use rose-pine-dawn
 ```
 
-### Shell Completion Setup
-
-Completions are automatically installed during system installation. For manual
-setup:
+### Interactive selection (requires fzf)
 
 ```bash
-# Generate completion scripts
-farv --generate-completion bash > ~/.bash_completion.d/farv
-farv --generate-completion zsh > ~/.local/share/zsh/site-functions/_farv
-farv --generate-completion fish > ~/.config/fish/completions/farv.fish
+farv use
 ```
 
-## Creating Themes
-
-### Theme Structure
-
-A theme is a directory containing configuration files for various applications:
-
-```
-my-theme/
-├── alacritty.toml          # Alacritty terminal config
-├── ghostty                 # Ghostty terminal config
-├── hyprland.conf          # Hyprland window manager
-├── waybar.css             # Waybar status bar styles
-├── background.png         # Desktop background
-├── neovim.lua            # Neovim configuration
-├── tmux.conf             # tmux configuration
-└── custom-script.sh*     # Executable script (optional)
-```
-
-### Executable Scripts
-
-Themes can include executable scripts that run during theme application:
+### Show current theme
 
 ```bash
-#!/bin/bash
-# custom-script.sh - receives these arguments:
-# $1: script directory path
-# $2: theme name
-# $3: theme category (light/dark)
-# $4: current symlink directory
-
-# Example: reload specific application
-if pgrep -x myapp >/dev/null; then
-    killall -USR1 myapp  # Send reload signal
-fi
+farv current
 ```
 
-### User Theme Creation
-
-Create themes in your user directory:
+### Cycle through themes
 
 ```bash
-# Create a new user theme
-mkdir -p ~/.config/farv/themes/dark/my-theme
-cd ~/.config/farv/themes/dark/my-theme
-
-# Add configuration files
-cp ~/.config/alacritty/alacritty.toml ./alacritty.toml
-# Edit alacritty.toml with your theme colors...
-
-# Test the theme
-farv my-theme
+farv next      # Next theme alphabetically
+farv prev      # Previous theme
+farv random    # Random theme
 ```
 
-### Theme Inheritance
+## Creating Your First Override
 
-Create partial themes that inherit from system themes:
+Let's customize an existing theme:
 
 ```bash
-# Override just the background for an existing theme
+# Create your override directory
 mkdir -p ~/.config/farv/themes/dark/tokyonight-night
-cp ~/my-custom-background.png \
-  ~/.config/farv/themes/dark/tokyonight-night/background.png
 
-# Now 'tokyonight-night' uses your background but inherits all other files
+# Copy your current wallpaper
+cp ~/Pictures/my-wallpaper.png \
+  ~/.config/farv/themes/dark/tokyonight-night/wallpaper.png
+
+# Apply the theme - now uses your wallpaper!
+farv use tokyonight-night
 ```
 
-## How It Works
+## Directory Structure
 
-### Theme Application Process
+```
+/usr/share/farv/themes/         # System themes (managed by farv)
+├── light/
+│   └── rose-pine-dawn/         # Complete theme
+├── dark/
+│   └── tokyonight-night/       # Complete theme
+└── common-script.sh            # Global system script
 
-When you run `farv theme-name`:
+~/.config/farv/themes/          # Your custom themes and overrides
+├── light/
+│   ├── rose-pine-dawn/         # Your overrides for this theme
+│   └── custom-light-script.sh  # Shared across all your light themes
+├── dark/
+│   ├── tokyonight-night/       # Your overrides for this theme
+│   └── custom-dark-script.sh   # Shared across all your dark themes
+└── global-script.sh            # Your global fallback script
 
-1. **Theme Discovery**: Searches for theme in user and system directories
-2. **File Resolution**: Discovers all unique filenames across the theme
-   hierarchy
-3. **Symlink Creation**: Creates symlinks in `~/.config/farv/current/`
-   pointing to the highest-priority version of each file
-4. **Script Execution**: Runs any executable scripts found in the theme
-   directories (in priority order)
+~/.config/farv/current/         # Active theme (symbolic links)
+├── alacritty.toml -> /usr/share/farv/themes/dark/tokyonight-night/alacritty.toml
+├── wallpaper.png -> ~/.config/farv/themes/dark/tokyonight-night/wallpaper.png
+└── ...
+```
 
-### Application Integration
+## Application Setup
 
-Applications are configured to read from the `~/.config/farv/current/`
-directory:
+Configure your applications to read from `~/.config/farv/current/`:
 
-```bash
-# Example alacritty configuration
-alacritty --config-file ~/.config/farv/current/alacritty.toml
+**Alacritty** (`~/.config/alacritty/alacritty.toml`):
 
-# Example in ~/.config/alacritty/alacritty.toml
+```toml
 import = ["~/.config/farv/current/alacritty.toml"]
 ```
 
-### Supported Applications
-
-Current theme system includes configurations for:
-
-- **Terminals**: Alacritty, Ghostty
-- **Window Manager**: Hyprland, Hyprlock
-- **Status Bar**: Waybar
-- **System**: GTK themes, backgrounds
-- **CLI Tools**: bat, btop, fzf, tmux
-- **Editors**: Neovim
-- **Launchers**: wofi
-- **Notifications**: mako
-
-## Examples
-
-### Switching Themes
+**tmux** (`~/.config/tmux/tmux.conf`):
 
 ```bash
-# Switch to a light theme
-farv rose-pine-dawn
-
-# Switch to a dark theme
-farv tokyonight-night
-
-# Interactive selection
-farv
-# Opens fzf menu with all available themes
+source-file ~/.config/farv/current/tmux.conf
 ```
 
-### Creating a Custom Theme
+**neovim** (`~/.config/nvim/`)
+Create a symlink from your plugins directory to the relevant farv file.
+
+## Installation
 
 ```bash
-# Create directory structure
-mkdir -p ~/.config/farv/themes/dark/my-cyberpunk
-
-# Add terminal colors
-cat > ~/.config/farv/themes/dark/my-cyberpunk/alacritty.toml << 'EOF'
-[colors.primary]
-background = '#0a0a0a'
-foreground = '#00ff41'
-
-[colors.normal]
-black = '#000000'
-green = '#00ff41'
-cyan = '#00ffff'
-# ... more colors
-EOF
-
-# Add background
-cp ~/Pictures/cyberpunk-wallpaper.png \
-  ~/.config/farv/themes/dark/my-cyberpunk/background.png
-
-# Test the theme
-farv my-cyberpunk
+git clone https://github.com/datamadsen/farv.git
+cd farv
+sudo ./install.sh
 ```
 
-### Theme with Custom Script
+## Advanced Features
+
+### Theme Management
 
 ```bash
-# Create theme with reload script
-mkdir -p ~/.config/farv/themes/dark/my-theme
-
-# Create a script that reloads specific applications
-cat > ~/.config/farv/themes/dark/my-theme/reload-apps.sh << 'EOF'
-#!/bin/bash
-# Reload applications after theme switch
-
-# Reload waybar
-if pgrep -x waybar >/dev/null; then
-    killall waybar
-    waybar &
-fi
-
-# Notify user
-notify-send "Theme Applied" "Switched to $2 theme"
-EOF
-
-chmod +x ~/.config/farv/themes/dark/my-theme/reload-apps.sh
+farv new light my-theme        # Create new theme
+farv clone rose-pine-dawn      # Clone existing theme
+farv pack my-theme.tar.gz      # Package theme for sharing
+farv install theme.tar.gz      # Install theme package
 ```
 
-## Configuration
+### Customize Current Theme
 
-### User Configuration File
-
-Location: `~/.config/farv/config`
+You can customize the current theme one file at a time.
 
 ```bash
-# Farv user configuration
-# HANDLER_TIMEOUT=10
-# VERBOSE=true
-# DEFAULT_CATEGORY="dark"
+farv customize <tab>  # Show list of files for current theme
 ```
 
-## Dependencies
+```bash
+farv customize ghostty  # Copy the ghostty file to your override directory
+```
 
-### Required
-- `bash` (4.0+)
-- Standard UNIX utilities (`ln`, `mkdir`, `rm`, etc.)
+### Reload Theme
 
-### Optional
-- `fzf` - For interactive theme selection
-- `gsettings` - For GTK theme switching
-- `hyprctl` - For Hyprland integration
-- `jq` - For JSON processing in scripts
+```bash
+farv reload                    # Reapply current theme
+```
 
-## Contributing
+### Scripts
 
-1. Themes should follow the established directory structure
-2. Include configuration files for as many applications as practical
-3. Test themes on both light and dark categories when applicable
-4. Document any special requirements or application setup needed
+Often it will not be enough to just have a file in the theme folder. For
+instance, just having a wallpaper.png will not make it so that it will
+automatically be set by magic. That magic needs to be implemented in scripts.
+Farv comes with a few predefined scripts, and one of those are to set the
+wallpaper with `swaybg`. If you use something else, you should create an
+executable script in one of your layer folders:
 
-## License
+- `~/.config/farv/themes`
+- `~/.config/farv/themes/dark`
+- `~/.config/farv/themes/light`
+- `~/.config/farv/themes/dark/{your-theme}`
+- `~/.config/farv/themes/light/{your-theme}`
 
-[Add license information]
+For something like wallpaper, that will probably be the same for every theme, it
+should be put in `~/.config/farv/themes` and then it will be run every time a
+new theme is applied. Check `/usr/share/farv/themes/swaybg-wallpaper.sh` for
+inspiration.
 
-## See Also
+For something like setting the system appearance to either light or dark mode,
+it should be in either:
 
-- [r/unixporn](https://reddit.com/r/unixporn) - Community for sharing desktop
-  customizations
-- [dotfiles repositories](https://dotfiles.github.io/) - More configuration
-  examples
+- `~/.config/farv/themes/dark`, or
+- `~/.config/farv/themes/light`
+
+Check the `/usr/share/farv/themes/dark/gtk.sh` and
+`/usr/share/farv/themes/light/gtk.sh` for inspiration.
+
+You could have some very specific scripts for a theme that you would like to run
+as well. Then just put it in the theme folder, like
+`~/.config/farv/themes/dark/my-theme/gtk.sh` and it will be run after applying
+`my-theme`.
+
+Remember to make your scripts executable for them to run:
+
+```bash
+chmod +x ~/.config/farv/themes/dark/my-theme/gtk.sh
+```
+
