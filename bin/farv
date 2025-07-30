@@ -9,8 +9,22 @@
 # Configuration and Setup
 # ----------------------------------------------------------------------------
 
-# System paths
-FARV_SYSTEM_DIR="/usr/share/farv"
+# Detect platform and set system paths
+case "$(uname -s)" in
+  Darwin*)
+    # macOS - check for Homebrew installation
+    if command -v brew >/dev/null 2>&1; then
+      FARV_SYSTEM_DIR="$(brew --prefix)/share/farv"
+    else
+      FARV_SYSTEM_DIR="/usr/local/share/farv"
+    fi
+    ;;
+  *)
+    # Linux and other Unix-like systems
+    FARV_SYSTEM_DIR="/usr/share/farv"
+    ;;
+esac
+
 FARV_SYSTEM_THEMES="$FARV_SYSTEM_DIR/themes"
 
 # User paths (XDG compliant)
@@ -209,7 +223,7 @@ find_theme_path() {
 # Function to get current theme info from symlinks
 get_current_theme_info() {
   # Read a symlink to determine current theme name and category
-  # Look for pattern: /usr/share/farv/themes/{category}/{theme}/{file}
+  # Look for pattern: $FARV_SYSTEM_THEMES/{category}/{theme}/{file}
   # or: ~/.config/farv/themes/{category}/{theme}/{file}
   local sample_link
   sample_link=$(find "$FARV_CURRENT_LINK" -type l 2>/dev/null | head -n1)
@@ -1027,7 +1041,7 @@ _farv_second_arg() {
                     if [[ "$line" == *" (light)"* ]]; then
                         theme_name="${line%% \(light\)*}"
                         if [[ "$line" == *"[user]" ]]; then
-                            if [[ -d "/usr/share/farv/themes/light/$theme_name" ]]; then
+                            if [[ -d "$FARV_SYSTEM_THEMES/light/$theme_name" ]]; then
                                 description="customized light system theme"
                             else
                                 description="light user theme"
@@ -1039,7 +1053,7 @@ _farv_second_arg() {
                     elif [[ "$line" == *" (dark)"* ]]; then
                         theme_name="${line%% \(dark\)*}"
                         if [[ "$line" == *"[user]" ]]; then
-                            if [[ -d "/usr/share/farv/themes/dark/$theme_name" ]]; then
+                            if [[ -d "$FARV_SYSTEM_THEMES/dark/$theme_name" ]]; then
                                 description="customized dark system theme"
                             else
                                 description="dark user theme"
@@ -1064,7 +1078,7 @@ _farv_second_arg() {
                     if [[ "$line" == *" (light)"* ]]; then
                         theme_name="${line%% \(light\)*}"
                         if [[ "$line" == *"[user]" ]]; then
-                            if [[ -d "/usr/share/farv/themes/light/$theme_name" ]]; then
+                            if [[ -d "$FARV_SYSTEM_THEMES/light/$theme_name" ]]; then
                                 description="customized light system theme"
                             else
                                 description="light user theme"
@@ -1076,7 +1090,7 @@ _farv_second_arg() {
                     elif [[ "$line" == *" (dark)"* ]]; then
                         theme_name="${line%% \(dark\)*}"
                         if [[ "$line" == *"[user]" ]]; then
-                            if [[ -d "/usr/share/farv/themes/dark/$theme_name" ]]; then
+                            if [[ -d "$FARV_SYSTEM_THEMES/dark/$theme_name" ]]; then
                                 description="customized dark system theme"
                             else
                                 description="dark user theme"
@@ -1215,7 +1229,7 @@ function __farv_complete_themes_with_desc
         if string match -q '* (light)*' -- "$line"
             set theme_name (string replace -r ' \(light\).*$' '' -- "$line")
             if string match -q '*[user]*' -- "$line"
-                if test -d "/usr/share/farv/themes/light/$theme_name"
+                if test -d "$FARV_SYSTEM_THEMES/light/$theme_name"
                     set description "customized light system theme"
                 else
                     set description "light user theme"
@@ -1228,7 +1242,7 @@ function __farv_complete_themes_with_desc
         else if string match -q '* (dark)*' -- "$line"
             set theme_name (string replace -r ' \(dark\).*$' '' -- "$line")
             if string match -q '*[user]*' -- "$line"
-                if test -d "/usr/share/farv/themes/dark/$theme_name"
+                if test -d "$FARV_SYSTEM_THEMES/dark/$theme_name"
                     set description "customized dark system theme"
                 else
                     set description "dark user theme"
@@ -1261,7 +1275,7 @@ function __farv_setup_theme_completions_for_use
         if string match -q '* (light)*' -- "$line"
             set theme_name (string replace -r ' \(light\).*$' '' -- "$line")
             if string match -q '*[user]*' -- "$line"
-                if test -d "/usr/share/farv/themes/light/$theme_name"
+                if test -d "$FARV_SYSTEM_THEMES/light/$theme_name"
                     set description "customized light system theme"
                 else
                     set description "light user theme"
@@ -1274,7 +1288,7 @@ function __farv_setup_theme_completions_for_use
         else if string match -q '* (dark)*' -- "$line"
             set theme_name (string replace -r ' \(dark\).*$' '' -- "$line")
             if string match -q '*[user]*' -- "$line"
-                if test -d "/usr/share/farv/themes/dark/$theme_name"
+                if test -d "$FARV_SYSTEM_THEMES/dark/$theme_name"
                     set description "customized dark system theme"
                 else
                     set description "dark user theme"
@@ -1308,7 +1322,7 @@ function __farv_setup_theme_completions_for_clone
         if string match -q '* (light)*' -- "$line"
             set theme_name (string replace -r ' \(light\).*$' '' -- "$line")
             if string match -q '*[user]*' -- "$line"
-                if test -d "/usr/share/farv/themes/light/$theme_name"
+                if test -d "$FARV_SYSTEM_THEMES/light/$theme_name"
                     set description "customized light system theme"
                 else
                     set description "light user theme"
@@ -1321,7 +1335,7 @@ function __farv_setup_theme_completions_for_clone
         else if string match -q '* (dark)*' -- "$line"
             set theme_name (string replace -r ' \(dark\).*$' '' -- "$line")
             if string match -q '*[user]*' -- "$line"
-                if test -d "/usr/share/farv/themes/dark/$theme_name"
+                if test -d "$FARV_SYSTEM_THEMES/dark/$theme_name"
                     set description "customized dark system theme"
                 else
                     set description "dark user theme"
