@@ -159,6 +159,21 @@ get_current_theme_info() {
   return 1
 }
 
+# Function to get current active theme (for pack command)
+get_current_active_theme() {
+  local theme_info
+  if ! theme_info=$(get_current_theme_info); then
+    echo "Error: No theme is currently active" >&2
+    echo "Use 'farv use <theme>' to activate a theme first" >&2
+    return 1
+  fi
+
+  local theme_name="${theme_info%:*}"
+  local theme_category="${theme_info#*:}"
+
+  echo "$theme_name:$theme_category"
+}
+
 # Function to list files in current theme
 list_current_theme_files() {
   echo "Available files in current theme:"
@@ -290,7 +305,7 @@ customize_theme_file() {
 # Helper function to check if theme exists locally
 theme_exists_locally() {
   local theme_name="$1"
-  
+
   # Check through all available themes
   while IFS= read -r theme_line; do
     if [[ -n "$theme_line" ]]; then
@@ -302,26 +317,26 @@ theme_exists_locally() {
       else
         parsed_name="$theme_line"
       fi
-      
+
       if [[ "$parsed_name" == "$theme_name" ]]; then
         return 0
       fi
     fi
   done < <(list_themes)
-  
+
   return 1
 }
 
 # Get source theme path and category information
 get_theme_source_info() {
   local theme_name="$1"
-  
+
   # Try to resolve theme path in both categories
   local light_path dark_path source_path source_category
-  
+
   light_path=$(resolve_theme_path "$theme_name" "light" 2>/dev/null)
   dark_path=$(resolve_theme_path "$theme_name" "dark" 2>/dev/null)
-  
+
   if [[ -n "$light_path" ]]; then
     source_path="$light_path"
     source_category="light"
@@ -332,7 +347,7 @@ get_theme_source_info() {
     echo "Error: Could not resolve path for theme '$theme_name'"
     return 1
   fi
-  
+
   echo "$source_path:$source_category"
 }
 
@@ -341,7 +356,7 @@ validate_clone_request() {
   local source_theme="$1"
   local target_name="$2"
   local target_category="$3"
-  
+
   # Validate source theme exists
   if ! theme_exists_locally "$source_theme"; then
     echo "Error: Source theme '$source_theme' not found" >&2
@@ -350,45 +365,45 @@ validate_clone_request() {
     list_themes >&2
     return 1
   fi
-  
+
   # Validate target name if provided
   if [[ -n "$target_name" ]] && ! validate_theme_name "$target_name"; then
     echo "Error: Invalid target theme name '$target_name'" >&2
     echo "Theme names must contain only letters, numbers, hyphens, and underscores" >&2
     return 1
   fi
-  
+
   # If no target name, use source name (for system → user cloning)
   if [[ -z "$target_name" ]]; then
     target_name="$source_theme"
   fi
-  
+
   # Get source info to determine default category
   local source_info
   if ! source_info=$(get_theme_source_info "$source_theme"); then
     return 1
   fi
-  
+
   local source_category="${source_info#*:}"
   target_category="${target_category:-$source_category}"
-  
+
   # Check if target already exists (either as user or system theme)
   local target_user_dir="$FARV_USER_THEMES/$target_category/$target_name"
   local target_system_dir="$FARV_SYSTEM_THEMES/$target_category/$target_name"
-  
+
   if [[ -d "$target_user_dir" ]]; then
     echo "Error: Theme '$target_name' already exists in $target_category category (user)" >&2
     echo "Location: $target_user_dir" >&2
     return 1
   fi
-  
+
   if [[ -d "$target_system_dir" ]]; then
     echo "Error: Theme '$target_name' already exists in $target_category category (system)" >&2
     echo "Location: $target_system_dir" >&2
     echo "Choose a different name to avoid confusion" >&2
     return 1
   fi
-  
+
   echo "$target_name:$target_category"
 }
 
@@ -397,32 +412,32 @@ clone_local_theme() {
   local source_theme="$1"
   local target_name="$2"
   local target_category="$3"
-  
+
   # Resolve source theme information
   local source_info
   if ! source_info=$(get_theme_source_info "$source_theme"); then
     return 1
   fi
-  
+
   local source_path="${source_info%:*}"
   local source_category="${source_info#*:}"
-  
+
   # Use source category if target category not specified
   target_category="${target_category:-$source_category}"
-  
+
   # Use source name if target name not specified
   target_name="${target_name:-$source_theme}"
-  
+
   # Create target directory
   local target_dir="$FARV_USER_THEMES/$target_category/$target_name"
-  
+
   # Validate we're not trying to clone to the same location
   if [[ "$source_path" == "$target_dir" ]]; then
     echo "Error: Cannot clone theme to itself"
     echo "Source and target are the same: $target_dir"
     return 1
   fi
-  
+
   # Copy all files (recursive)
   mkdir -p "$target_dir"
   if ! cp -r "$source_path"/* "$target_dir/" 2>/dev/null; then
@@ -430,13 +445,13 @@ clone_local_theme() {
     rm -rf "$target_dir"
     return 1
   fi
-  
+
   # Determine source type for informative message
   local source_type="user"
   if [[ "$source_path" == "$FARV_SYSTEM_THEMES"* ]]; then
     source_type="system"
   fi
-  
+
   echo "Cloned theme: $source_theme ($source_type) → $target_name ($target_category)"
   echo "Location: $target_dir"
   echo ""
@@ -450,7 +465,7 @@ clone_theme() {
   local source_theme="$1"
   local target_name="$2"
   local target_category="$3"
-  
+
   # Validate clone request
   local validation_result
   validation_result=$(validate_clone_request "$source_theme" "$target_name" "$target_category")
@@ -458,13 +473,297 @@ clone_theme() {
     # Error occurred during validation - the error message was already printed by validate_clone_request
     return 1
   fi
-  
+
   # Parse validation result
   target_name="${validation_result%:*}"
   target_category="${validation_result#*:}"
-  
+
   # Perform the clone
   clone_local_theme "$source_theme" "$target_name" "$target_category"
+}
+
+# Function to collect all source files for current theme
+collect_theme_sources() {
+  local theme_name="$1"
+  local theme_category="$2"
+  local temp_dir="$3"
+
+  echo "Collecting theme files for $theme_name ($theme_category)..."
+
+  # Create directory structure in temp location
+  local pack_theme_dir="$temp_dir/themes/$theme_category/$theme_name"
+  mkdir -p "$pack_theme_dir"
+
+  # Process each symlink in current theme
+  if [[ -d "$FARV_CONFIG_HOME/current" ]]; then
+    for symlink in "$FARV_CONFIG_HOME/current"/*; do
+      if [[ -L "$symlink" ]]; then
+        local filename=$(basename "$symlink")
+        local source_path=$(readlink "$symlink")
+
+        # Copy source file to pack directory
+        if [[ -f "$source_path" ]]; then
+          cp "$source_path" "$pack_theme_dir/$filename"
+          echo "  + $filename"
+        fi
+      fi
+    done
+  fi
+
+  # Also collect any executable scripts
+  collect_theme_scripts "$theme_name" "$theme_category" "$pack_theme_dir"
+}
+
+# Function to collect executable scripts for theme
+collect_theme_scripts() {
+  local theme_name="$1"
+  local theme_category="$2"
+  local pack_theme_dir="$3"
+
+  # Get scripts in priority order
+  local scripts
+  readarray -t scripts < <(discover_theme_scripts "$theme_category" "$theme_name")
+
+  for script_path in "${scripts[@]}"; do
+    if [[ -f "$script_path" && -x "$script_path" ]]; then
+      local script_name=$(basename "$script_path")
+      cp "$script_path" "$pack_theme_dir/$script_name"
+      chmod +x "$pack_theme_dir/$script_name"
+      echo "  + $script_name (executable)"
+    fi
+  done
+}
+
+# Function to create metadata file for theme package
+create_theme_metadata() {
+  local theme_dir="$1"
+
+  cat >"$theme_dir/FARV_THEME_INFO" <<EOF
+# Farv Theme Package Information
+# Generated on: $(date -Iseconds)
+# Farv version: $(farv --version 2>/dev/null || echo "unknown")
+
+THEME_NAME="$(basename "$theme_dir")"
+THEME_CATEGORY="$(basename "$(dirname "$theme_dir")")"
+PACKAGE_VERSION="1.0"
+PACKED_BY="$(whoami)@$(hostname)"
+PACKED_FROM="$(pwd)"
+
+# Files included in this package:
+$(find "$theme_dir" -type f ! -name "FARV_THEME_INFO" | sort | sed 's|^.*/||' | sed 's/^/# - /')
+EOF
+}
+
+# Function to create tar.gz archive from collected files
+create_theme_archive() {
+  local temp_dir="$1"
+  local output_file="$2"
+  local theme_name="$3"
+  local theme_category="$4"
+
+  # Create archive from temp directory
+  local current_dir=$(pwd)
+  cd "$temp_dir"
+
+  # Include metadata file
+  create_theme_metadata "themes/$theme_category/$theme_name"
+
+  if tar -czf "$current_dir/$output_file" themes/; then
+    echo "Theme packed successfully: $output_file"
+    echo "Archive contains:"
+    tar -tzf "$current_dir/$output_file" | sed 's/^/  /'
+  else
+    echo "Error: Failed to create archive" >&2
+    return 1
+  fi
+
+  cd "$current_dir"
+}
+
+# Main pack function
+pack_theme() {
+  local output_file="$1"
+  local output_dir="$2"
+
+  # Get current theme info
+  local current_theme
+  if ! current_theme=$(get_current_active_theme); then
+    return 1
+  fi
+
+  local theme_name="${current_theme%:*}"
+  local theme_category="${current_theme#*:}"
+
+  # Determine output filename
+  if [[ -z "$output_file" ]]; then
+    output_file="farv-${theme_name}-$(date +%Y%m%d).tar.gz"
+  fi
+
+  # Ensure .tar.gz extension
+  if [[ "$output_file" != *.tar.gz ]]; then
+    output_file="${output_file%.tar}.tar.gz"
+  fi
+
+  # Add output directory if specified
+  if [[ -n "$output_dir" ]]; then
+    output_file="$output_dir/$output_file"
+  fi
+
+  # Check if output file already exists
+  if [[ -f "$output_file" ]]; then
+    echo "Error: Output file already exists: $output_file" >&2
+    echo "Use a different name or remove the existing file" >&2
+    return 1
+  fi
+
+  # Create temporary directory
+  local temp_dir=$(mktemp -d)
+  trap "rm -rf $temp_dir" EXIT
+
+  # Collect theme files
+  collect_theme_sources "$theme_name" "$theme_category" "$temp_dir"
+
+  # Create archive
+  create_theme_archive "$temp_dir" "$output_file" "$theme_name" "$theme_category"
+}
+
+# Function to validate theme archive before installation
+validate_theme_archive() {
+  local archive_file="$1"
+
+  # Check file exists and is readable
+  if [[ ! -f "$archive_file" ]]; then
+    echo "Error: Archive file not found: $archive_file" >&2
+    return 1
+  fi
+
+  # Check if it's a valid tar.gz file
+  if ! tar -tzf "$archive_file" >/dev/null 2>&1; then
+    echo "Error: Invalid or corrupted archive file" >&2
+    return 1
+  fi
+
+  # Check for required directory structure
+  if ! tar -tzf "$archive_file" | grep -q "^themes/\(light\|dark\)/[^/]\+/"; then
+    echo "Error: Archive does not contain valid farv theme structure" >&2
+    echo "Expected: themes/{light|dark}/{theme-name}/..." >&2
+    echo "Found structure:" >&2
+    tar -tzf "$archive_file" | head -5 | sed 's/^/  /' >&2
+    return 1
+  fi
+
+  echo "Archive validation successful"
+  return 0
+}
+
+# Function to extract theme information from archive
+extract_theme_info() {
+  local archive_file="$1"
+
+  # Try to extract metadata if it exists
+  if tar -tzf "$archive_file" | grep -q "FARV_THEME_INFO$"; then
+    local temp_file=$(mktemp)
+    tar -xzf "$archive_file" -O '*/FARV_THEME_INFO' >"$temp_file" 2>/dev/null
+
+    if [[ -s "$temp_file" ]]; then
+      source "$temp_file"
+      echo "$THEME_NAME:$THEME_CATEGORY"
+      rm -f "$temp_file"
+      return 0
+    fi
+    rm -f "$temp_file"
+  fi
+
+  # Fallback: parse from directory structure
+  local first_entry=$(tar -tzf "$archive_file" | grep -E "^themes/(light|dark)/[^/]+/$" | head -1)
+  if [[ -n "$first_entry" ]]; then
+    local theme_name=$(basename "${first_entry%/}")
+    local theme_category=$(basename "$(dirname "${first_entry%/}")")
+    echo "$theme_name:$theme_category"
+    return 0
+  fi
+
+  echo "Error: Could not determine theme information from archive" >&2
+  return 1
+}
+
+# Function to install theme from archive
+install_theme() {
+  local archive_file="$1"
+  local custom_name="$2"
+  local preview_only="$3"
+
+  # Validate archive
+  if ! validate_theme_archive "$archive_file"; then
+    return 1
+  fi
+
+  # Extract theme information
+  local theme_info
+  if ! theme_info=$(extract_theme_info "$archive_file"); then
+    return 1
+  fi
+
+  local original_name="${theme_info%:*}"
+  local theme_category="${theme_info#*:}"
+  local install_name="${custom_name:-$original_name}"
+
+  # Preview mode
+  if [[ "$preview_only" == "true" ]]; then
+    echo "Theme archive contents:"
+    echo "  Original name: $original_name"
+    echo "  Category: $theme_category"
+    echo "  Install name: $install_name"
+    echo ""
+    echo "Files:"
+    tar -tzf "$archive_file" | grep -v "/$" | sort | sed 's/^/  /'
+    return 0
+  fi
+
+  # Check for existing theme
+  local target_dir="$FARV_USER_THEMES/$theme_category/$install_name"
+  if [[ -d "$target_dir" ]]; then
+    echo "Error: Theme '$install_name' already exists in $theme_category category" >&2
+    echo "Location: $target_dir" >&2
+    echo "Use --name to install with a different name" >&2
+    return 1
+  fi
+
+  # Create temporary extraction directory
+  local temp_dir=$(mktemp -d)
+  trap "rm -rf $temp_dir" EXIT
+
+  # Extract archive
+  if ! tar -xzf "$archive_file" -C "$temp_dir"; then
+    echo "Error: Failed to extract archive" >&2
+    return 1
+  fi
+
+  # Find the theme directory in extracted files
+  local source_theme_dir
+  source_theme_dir=$(find "$temp_dir" -type d -path "*/themes/$theme_category/$original_name" | head -1)
+
+  if [[ ! -d "$source_theme_dir" ]]; then
+    echo "Error: Could not find theme directory in extracted archive" >&2
+    return 1
+  fi
+
+  # Install theme
+  mkdir -p "$FARV_USER_THEMES/$theme_category"
+  if cp -r "$source_theme_dir" "$target_dir"; then
+    echo "Theme installed successfully: $install_name ($theme_category)"
+    echo "Location: $target_dir"
+    echo ""
+    echo "Files installed:"
+    find "$target_dir" -type f | sort | sed "s|$target_dir/|  |"
+    echo ""
+    echo "Next steps:"
+    echo "  1. Test with: farv use $install_name"
+    echo "  2. Customize files in $target_dir if needed"
+  else
+    echo "Error: Failed to install theme files" >&2
+    return 1
+  fi
 }
 
 # Function to resolve theme path (for theme existence checking)
@@ -638,6 +937,8 @@ _farv_commands_only() {
         'customize:Customize a theme file'
         'new:Create a new user theme'
         'clone:Clone existing local theme'
+        'pack:Package current theme'
+        'install:Install theme package'
     )
     _describe 'commands' commands
 }
@@ -737,6 +1038,10 @@ _farv_second_arg() {
             )
             _describe 'categories' categories
             ;;
+        install)
+            # Complete .tar.gz files
+            _files -g "*.tar.gz"
+            ;;
     esac
 }
 
@@ -804,9 +1109,15 @@ _farv() {
         return 0
     fi
     
+    # Handle install subcommand - complete .tar.gz files
+    if [[ ${prev} == "install" ]]; then
+        COMPREPLY=( $(compgen -f -X "!*.tar.gz" -- ${cur}) )
+        return 0
+    fi
+    
     # First argument - show commands only
     if [[ ${COMP_CWORD} == 1 ]]; then
-        local commands="use list customize new clone"
+        local commands="use list customize new clone pack install"
         COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
         return 0
     fi
@@ -909,6 +1220,8 @@ complete -c farv -f -n '__fish_is_first_token' -a 'list' -d 'List available them
 complete -c farv -f -n '__fish_is_first_token' -a 'customize' -d 'Customize theme file'
 complete -c farv -f -n '__fish_is_first_token' -a 'new' -d 'Create new theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'clone' -d 'Clone existing theme'
+complete -c farv -f -n '__fish_is_first_token' -a 'pack' -d 'Package current theme'
+complete -c farv -f -n '__fish_is_first_token' -a 'install' -d 'Install theme package'
 
 # Complete categories after 'new'
 complete -c farv -f -n '__fish_seen_subcommand_from new; and test (count (commandline -opc)) -eq 2' -a 'light dark'
@@ -951,6 +1264,9 @@ __farv_setup_theme_completions_for_clone
 # Complete current theme files for customize command
 complete -c farv -f -n '__fish_seen_subcommand_from customize' -a '(__farv_complete_current_files)' -d 'Current theme files'
 
+# Complete .tar.gz files for install
+complete -c farv -f -n '__fish_seen_subcommand_from install' -a '*.tar.gz' -d 'Theme package'
+
 # Standard options
 complete -c farv -s l -l list -d 'List available themes'
 complete -c farv -l help -d 'Show help'
@@ -969,33 +1285,23 @@ USAGE:
     farv new <category> <name>       Create a new user theme
     farv clone <source> [name]       Clone existing local theme
     farv customize <filename>        Copy theme file to user directory for customization
+    farv pack [filename]             Package current theme for sharing
+    farv install <archive>           Install theme from package
     farv --help                      Show this help message
     farv --generate-completion SHELL Generate completion script for shell
 
 EXAMPLES:
     farv use rose-pine-dawn          Use rose-pine-dawn theme
-    farv use "tokyonight-night (dark)" Use theme with full name
     farv use                         Open interactive theme selector
     farv new dark my-theme           Create new dark theme
     farv new light my-theme          Create new light theme
-    farv clone rose-pine-dawn my-rose Clone local theme with new name
+    farv clone rose-pine-dawn my-rpd Clone local theme with new name
     farv clone rose-pine-dawn        Clone system theme to user space
-    farv clone tokyonight-night --category light Clone with different category
     farv customize btop.theme        Copy btop.theme to user directory for editing
+    farv pack                        Pack current theme as farv-theme-name-date.tar.gz
+    farv pack my-theme.tar.gz        Pack with custom filename
+    farv install theme.tar.gz        Install theme package
     farv list                        Show all available themes
-
-NEW THEME CREATION:
-    After running 'farv new <category> <name>', add configuration files to:
-    ~/.config/farv/themes/{category}/{name}/
-    
-    Use 'farv customize <filename>' to copy files from current theme
-    as a starting point for your new theme.
-
-CUSTOMIZATION:
-    After running 'farv customize <filename>', edit the file at:
-    ~/.config/farv/themes/{category}/{theme}/{filename}
-    
-    The next time you apply the theme, your custom version will be used.
 EOF
 }
 
@@ -1063,46 +1369,134 @@ case "${1:-}" in
     list_themes
     exit 1
   fi
-  
+
   # Parse arguments including --category flag
   source_theme="$2"
   target_name=""
   category_override=""
-  
+
   # Process all arguments to find --category and target name
-  shift 2  # Remove 'clone' and source_theme
+  shift 2 # Remove 'clone' and source_theme
   while [[ $# -gt 0 ]]; do
     case $1 in
-      --category)
-        if [[ -z "$2" ]]; then
-          echo "Error: --category requires a value (light|dark)"
-          exit 1
-        fi
-        category_override="$2"
-        if [[ "$category_override" != "light" && "$category_override" != "dark" ]]; then
-          echo "Error: Category must be 'light' or 'dark'"
-          exit 1
-        fi
-        shift 2
-        ;;
-      -*)
-        echo "Error: Unknown option '$1'"
+    --category)
+      if [[ -z "$2" ]]; then
+        echo "Error: --category requires a value (light|dark)"
         exit 1
-        ;;
-      *)
-        # This should be the target name
-        if [[ -z "$target_name" ]]; then
-          target_name="$1"
-        else
-          echo "Error: Too many arguments. Expected: <source-theme> [new-name] [--category light|dark]"
-          exit 1
-        fi
-        shift
-        ;;
+      fi
+      category_override="$2"
+      if [[ "$category_override" != "light" && "$category_override" != "dark" ]]; then
+        echo "Error: Category must be 'light' or 'dark'"
+        exit 1
+      fi
+      shift 2
+      ;;
+    -*)
+      echo "Error: Unknown option '$1'"
+      exit 1
+      ;;
+    *)
+      # This should be the target name
+      if [[ -z "$target_name" ]]; then
+        target_name="$1"
+      else
+        echo "Error: Too many arguments. Expected: <source-theme> [new-name] [--category light|dark]"
+        exit 1
+      fi
+      shift
+      ;;
     esac
   done
-  
+
   clone_theme "$source_theme" "$target_name" "$category_override"
+  ;;
+"pack")
+  output_file=""
+  output_dir=""
+
+  # Parse arguments
+  shift
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+    --output)
+      output_dir="$2"
+      if [[ ! -d "$output_dir" ]]; then
+        echo "Error: Output directory does not exist: $output_dir"
+        exit 1
+      fi
+      shift 2
+      ;;
+    -*)
+      echo "Error: Unknown option '$1'"
+      exit 1
+      ;;
+    *)
+      if [[ -z "$output_file" ]]; then
+        output_file="$1"
+      else
+        echo "Error: Too many arguments"
+        exit 1
+      fi
+      shift
+      ;;
+    esac
+  done
+
+  pack_theme "$output_file" "$output_dir"
+  ;;
+"install")
+  if [[ -z "$2" ]]; then
+    echo "Usage: farv install [options] <theme-archive>"
+    echo ""
+    echo "Options:"
+    echo "  --name <name>     Install with different name"
+    echo "  --preview         Show archive contents without installing"
+    echo ""
+    echo "Examples:"
+    echo "  farv install theme.tar.gz"
+    echo "  farv install --name my-theme theme.tar.gz"
+    echo "  farv install --preview theme.tar.gz"
+    exit 1
+  fi
+
+  archive_file=""
+  custom_name=""
+  preview_only="false"
+
+  # Parse arguments
+  shift
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+    --name)
+      custom_name="$2"
+      shift 2
+      ;;
+    --preview)
+      preview_only="true"
+      shift
+      ;;
+    -*)
+      echo "Error: Unknown option '$1'"
+      exit 1
+      ;;
+    *)
+      if [[ -z "$archive_file" ]]; then
+        archive_file="$1"
+      else
+        echo "Error: Too many arguments"
+        exit 1
+      fi
+      shift
+      ;;
+    esac
+  done
+
+  if [[ -z "$archive_file" ]]; then
+    echo "Error: No archive file specified"
+    exit 1
+  fi
+
+  install_theme "$archive_file" "$custom_name" "$preview_only"
   ;;
 "use")
   if [ -z "$2" ]; then
@@ -1123,6 +1517,8 @@ case "${1:-}" in
   echo "  new <cat> <name>  Create new theme"
   echo "  clone <src> [name] Clone existing theme"
   echo "  customize <file>  Customize theme file"
+  echo "  pack [filename]   Package current theme"
+  echo "  install <archive> Install theme package"
   echo ""
   echo "For help: farv --help"
   ;;
@@ -1137,6 +1533,8 @@ case "${1:-}" in
   echo "  new <cat> <name>  Create new theme"
   echo "  clone <src> [name] Clone existing theme"
   echo "  customize <file>  Customize theme file"
+  echo "  pack [filename]   Package current theme"
+  echo "  install <archive> Install theme package"
   echo ""
   echo "For help: farv --help"
   exit 1
