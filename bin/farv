@@ -11,18 +11,18 @@
 
 # Detect platform and set system paths
 case "$(uname -s)" in
-  Darwin*)
-    # macOS - check for Homebrew installation
-    if command -v brew >/dev/null 2>&1; then
-      FARV_SYSTEM_DIR="$(brew --prefix)/share/farv"
-    else
-      FARV_SYSTEM_DIR="/usr/local/share/farv"
-    fi
-    ;;
-  *)
-    # Linux and other Unix-like systems
-    FARV_SYSTEM_DIR="/usr/share/farv"
-    ;;
+Darwin*)
+  # macOS - check for Homebrew installation
+  if command -v brew >/dev/null 2>&1; then
+    FARV_SYSTEM_DIR="$(brew --prefix)/share/farv"
+  else
+    FARV_SYSTEM_DIR="/usr/local/share/farv"
+  fi
+  ;;
+*)
+  # Linux and other Unix-like systems
+  FARV_SYSTEM_DIR="/usr/share/farv"
+  ;;
 esac
 
 FARV_SYSTEM_THEMES="$FARV_SYSTEM_DIR/themes"
@@ -336,21 +336,21 @@ list_themes() {
 show_current_theme() {
   local verbose="$1"
   local current_theme
-  
+
   if ! current_theme=$(get_current_theme_info); then
     echo "No theme is currently active" >&2
     echo "Use 'farv use <theme>' to activate a theme" >&2
     return 1
   fi
-  
+
   local theme_name="${current_theme%:*}"
   local theme_category="${current_theme#*:}"
-  
+
   if [[ "$verbose" == "true" ]]; then
     # Check if it's a user theme or system theme and if customized
     local user_theme_dir="$FARV_USER_THEMES/$theme_category/$theme_name"
     local system_theme_dir="$FARV_SYSTEM_THEMES/$theme_category/$theme_name"
-    
+
     if [[ -d "$user_theme_dir" ]]; then
       if [[ -d "$system_theme_dir" ]]; then
         echo "$theme_name (customized $theme_category system theme)"
@@ -372,16 +372,16 @@ show_current_theme() {
 # Function to reload current active theme
 reload_current_theme() {
   local current_theme
-  
+
   if ! current_theme=$(get_current_theme_info); then
     echo "No theme is currently active" >&2
     echo "Use 'farv use <theme>' to activate a theme first" >&2
     return 1
   fi
-  
+
   local theme_name="${current_theme%:*}"
   local theme_category="${current_theme#*:}"
-  
+
   echo "Reloading current theme: $theme_name ($theme_category)"
   apply_theme "$theme_name" "$theme_category"
 }
@@ -393,14 +393,14 @@ reload_current_theme() {
 # Helper function to get all available themes in sorted order
 get_all_themes_sorted() {
   local themes=()
-  
+
   # Get all themes and sort them
   while IFS= read -r theme; do
     if [[ -n "$theme" ]]; then
       themes+=("$theme")
     fi
   done < <(list_themes | sort)
-  
+
   printf '%s\n' "${themes[@]}"
 }
 
@@ -408,15 +408,15 @@ get_all_themes_sorted() {
 find_theme_in_cycle() {
   local current_theme="$1"
   local direction="$2" # "next" or "prev"
-  
+
   local themes=()
   readarray -t themes < <(get_all_themes_sorted)
-  
+
   if [[ ${#themes[@]} -eq 0 ]]; then
     echo "Error: No themes available" >&2
     return 1
   fi
-  
+
   # Find current theme index
   local current_index=-1
   for i in "${!themes[@]}"; do
@@ -425,20 +425,20 @@ find_theme_in_cycle() {
       break
     fi
   done
-  
+
   if [[ $current_index -eq -1 ]]; then
     echo "Error: Current theme '$current_theme' not found in available themes" >&2
     return 1
   fi
-  
+
   # Calculate next/previous index with wrapping
   local target_index
   if [[ "$direction" == "next" ]]; then
-    target_index=$(( (current_index + 1) % ${#themes[@]} ))
+    target_index=$(((current_index + 1) % ${#themes[@]}))
   else
-    target_index=$(( (current_index - 1 + ${#themes[@]}) % ${#themes[@]} ))
+    target_index=$(((current_index - 1 + ${#themes[@]}) % ${#themes[@]}))
   fi
-  
+
   echo "${themes[$target_index]}"
 }
 
@@ -450,13 +450,13 @@ cycle_to_next_theme() {
     echo "Use 'farv use <theme>' to activate a theme first" >&2
     return 1
   fi
-  
+
   local theme_name="${current_theme%:*}"
   local next_theme
   if ! next_theme=$(find_theme_in_cycle "$theme_name" "next"); then
     return 1
   fi
-  
+
   echo "Cycling from $theme_name to $next_theme"
   use_theme_by_name "$next_theme"
 }
@@ -469,13 +469,13 @@ cycle_to_prev_theme() {
     echo "Use 'farv use <theme>' to activate a theme first" >&2
     return 1
   fi
-  
+
   local theme_name="${current_theme%:*}"
   local prev_theme
   if ! prev_theme=$(find_theme_in_cycle "$theme_name" "prev"); then
     return 1
   fi
-  
+
   echo "Cycling from $theme_name to $prev_theme"
   use_theme_by_name "$prev_theme"
 }
@@ -484,20 +484,20 @@ cycle_to_prev_theme() {
 switch_to_random_theme() {
   local current_theme
   local current_theme_name=""
-  
+
   # Get current theme if any (don't fail if none active)
   if current_theme=$(get_current_theme_info 2>/dev/null); then
     current_theme_name="${current_theme%:*}"
   fi
-  
+
   local themes=()
   readarray -t themes < <(get_all_themes_sorted)
-  
+
   if [[ ${#themes[@]} -eq 0 ]]; then
     echo "Error: No themes available" >&2
     return 1
   fi
-  
+
   # Remove current theme from available options
   local available_themes=()
   for theme in "${themes[@]}"; do
@@ -505,22 +505,22 @@ switch_to_random_theme() {
       available_themes+=("$theme")
     fi
   done
-  
+
   if [[ ${#available_themes[@]} -eq 0 ]]; then
     echo "Error: No other themes available" >&2
     return 1
   fi
-  
+
   # Pick random theme
   local random_index=$((RANDOM % ${#available_themes[@]}))
   local random_theme="${available_themes[$random_index]}"
-  
+
   if [[ -n "$current_theme_name" ]]; then
     echo "Switching from $current_theme_name to $random_theme"
   else
     echo "Switching to random theme: $random_theme"
   fi
-  
+
   use_theme_by_name "$random_theme"
 }
 
@@ -910,22 +910,76 @@ clone_local_theme() {
     return 1
   fi
 
-  # Copy all files (recursive)
+  # Copy files only from theme-specific directories
   mkdir -p "$target_dir"
-  if ! cp -r "$source_path"/* "$target_dir/" 2>/dev/null; then
-    echo "Error: Failed to copy theme files from $source_path"
+
+  # Get theme-specific paths only (not category or global)
+  local theme_paths=(
+    "$FARV_USER_THEMES/$source_category/$source_theme"
+    "$FARV_SYSTEM_THEMES/$source_category/$source_theme"
+  )
+
+  local copied_count=0
+  local found_theme=false
+
+  # Copy files from theme-specific directories only
+  for theme_path in "${theme_paths[@]}"; do
+    if [[ -d "$theme_path" ]]; then
+      found_theme=true
+      for file in "$theme_path"/*; do
+        if [[ -f "$file" ]]; then
+          local filename
+          filename=$(basename "$file")
+          # Only copy if we haven't already copied this file (user overrides system)
+          if [[ ! -f "$target_dir/$filename" ]]; then
+            if cp "$file" "$target_dir/$filename"; then
+              # Preserve executable permissions
+              if [[ -x "$file" ]]; then
+                chmod +x "$target_dir/$filename"
+              fi
+              ((copied_count++))
+            else
+              echo "Warning: Failed to copy $filename"
+            fi
+          fi
+        fi
+      done
+    fi
+  done
+
+  if [[ "$found_theme" == false ]]; then
+    echo "Error: Theme '$source_theme' not found in category '$source_category'"
+    rm -rf "$target_dir"
+    return 1
+  fi
+
+  if [[ $copied_count -eq 0 ]]; then
+    echo "Error: No files were found in theme directories"
     rm -rf "$target_dir"
     return 1
   fi
 
   # Determine source type for informative message
-  local source_type="user"
-  if [[ "$source_path" == "$FARV_SYSTEM_THEMES"* ]]; then
-    source_type="system"
+  local source_type="system"
+  local has_user_files=false
+  local has_system_files=false
+
+  if [[ -d "$FARV_USER_THEMES/$source_category/$source_theme" ]]; then
+    has_user_files=true
+  fi
+  if [[ -d "$FARV_SYSTEM_THEMES/$source_category/$source_theme" ]]; then
+    has_system_files=true
+  fi
+
+  if [[ "$has_user_files" == true && "$has_system_files" == true ]]; then
+    source_type="user + system"
+  elif [[ "$has_user_files" == true ]]; then
+    source_type="user"
   fi
 
   echo "Cloned theme: $source_theme ($source_type) → $target_name ($target_category)"
   echo "Location: $target_dir"
+  echo "Copied $copied_count theme-specific files"
   echo ""
   echo "Next steps:"
   echo "  1. Customize theme files in $target_dir"
@@ -940,7 +994,7 @@ clone_theme() {
 
   # Validate clone request
   local validation_result
-  if ! validate_clone_request "$source_theme" "$target_name" "$target_category" >/dev/null; then
+  if ! validation_result=$(validate_clone_request "$source_theme" "$target_name" "$target_category"); then
     # Error occurred during validation - the error message was already printed by validate_clone_request
     return 1
   fi
@@ -1678,12 +1732,12 @@ case "${1:-}" in
   ;;
 "list" | "ls")
   verbose="false"
-  
+
   # Parse arguments for list command
   shift
   while [[ $# -gt 0 ]]; do
     case $1 in
-    -v|--verbose)
+    -v | --verbose)
       verbose="true"
       shift
       ;;
@@ -1699,17 +1753,17 @@ case "${1:-}" in
       ;;
     esac
   done
-  
+
   list_themes "$verbose"
   ;;
 "current")
   verbose="false"
-  
+
   # Parse arguments for current command
   shift
   while [[ $# -gt 0 ]]; do
     case $1 in
-    -v|--verbose)
+    -v | --verbose)
       verbose="true"
       shift
       ;;
@@ -1725,7 +1779,7 @@ case "${1:-}" in
       ;;
     esac
   done
-  
+
   show_current_theme "$verbose"
   ;;
 "reload")
@@ -1934,4 +1988,3 @@ case "${1:-}" in
   exit 1
   ;;
 esac
-
