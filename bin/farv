@@ -544,6 +544,7 @@ apply_theme() {
   readarray -t files < <(discover_theme_files "$theme_category" "$theme_name")
 
   # 3. For each unique filename, resolve and symlink highest priority version
+  local filename
   for filename in "${files[@]}"; do
     local resolved_path
     resolved_path=$(resolve_file_path "$theme_category" "$theme_name" "$filename")
@@ -763,8 +764,9 @@ customize_theme_file() {
 
   # Re-apply theme to update symlinks
   echo "Updating theme symlinks..."
+  local original_filename="$filename"
   apply_theme "$theme_name" "$theme_category"
-  echo "Theme reapplied - $filename now points to your custom copy"
+  echo "Theme reapplied - $original_filename now points to your custom copy"
   echo "Edit your custom file at: $target_path"
 }
 
