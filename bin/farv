@@ -1114,35 +1114,19 @@ _farv_second_arg() {
             # Show themes for use command - simpler approach to avoid variable leakage
             local -a themes theme_name description
             local theme_list
-            theme_list=$(farv list 2>/dev/null)
+            theme_list=$(farv list --verbose 2>/dev/null)
             
             while IFS= read -r line; do
                 if [[ -n "$line" ]]; then
-                    if [[ "$line" == *" (light)"* ]]; then
-                        theme_name="${line%% \(light\)*}"
-                        if [[ "$line" == *"[user]" ]]; then
-                            if [[ -d "$FARV_SYSTEM_THEMES/light/$theme_name" ]]; then
-                                description="customized light system theme"
-                            else
-                                description="light user theme"
-                            fi
-                        else
-                            description="light system theme"
-                        fi
-                        themes+=("${theme_name}:${description}")
-                    elif [[ "$line" == *" (dark)"* ]]; then
-                        theme_name="${line%% \(dark\)*}"
-                        if [[ "$line" == *"[user]" ]]; then
-                            if [[ -d "$FARV_SYSTEM_THEMES/dark/$theme_name" ]]; then
-                                description="customized dark system theme"
-                            else
-                                description="dark user theme"
-                            fi
-                        else
-                            description="dark system theme"
-                        fi
-                        themes+=("${theme_name}:${description}")
-                    fi
+                    # Parse: "theme-name (description)"
+                    case "$line" in
+                        *' ('*')')
+                            theme_name="${line%% *}"
+                            description="${line#*\(}"
+                            description="${description%\)}"
+                            themes+=("${theme_name}:${description}")
+                            ;;
+                    esac
                 fi
             done <<< "$theme_list"
             _describe 'themes' themes
@@ -1151,35 +1135,19 @@ _farv_second_arg() {
             # Show local themes for cloning
             local -a themes
             local theme_list
-            theme_list=$(farv list 2>/dev/null)
+            theme_list=$(farv list --verbose 2>/dev/null)
             
             while IFS= read -r line; do
                 if [[ -n "$line" ]]; then
-                    if [[ "$line" == *" (light)"* ]]; then
-                        theme_name="${line%% \(light\)*}"
-                        if [[ "$line" == *"[user]" ]]; then
-                            if [[ -d "$FARV_SYSTEM_THEMES/light/$theme_name" ]]; then
-                                description="customized light system theme"
-                            else
-                                description="light user theme"
-                            fi
-                        else
-                            description="light system theme"
-                        fi
-                        themes+=("${theme_name}:${description}")
-                    elif [[ "$line" == *" (dark)"* ]]; then
-                        theme_name="${line%% \(dark\)*}"
-                        if [[ "$line" == *"[user]" ]]; then
-                            if [[ -d "$FARV_SYSTEM_THEMES/dark/$theme_name" ]]; then
-                                description="customized dark system theme"
-                            else
-                                description="dark user theme"
-                            fi
-                        else
-                            description="dark system theme"
-                        fi
-                        themes+=("${theme_name}:${description}")
-                    fi
+                    # Parse: "theme-name (description)"
+                    case "$line" in
+                        *' ('*')')
+                            theme_name="${line%% *}"
+                            description="${line#*\(}"
+                            description="${description%\)}"
+                            themes+=("${theme_name}:${description}")
+                            ;;
+                    esac
                 fi
             done <<< "$theme_list"
             _describe 'themes to clone' themes
@@ -1253,7 +1221,7 @@ _farv() {
     # Handle use subcommand
     if [[ ${prev} == "use" ]]; then
         local themes
-        themes=$(farv list 2>/dev/null | sed 's/ (light).*//; s/ (dark).*//')
+        themes=$(farv list --verbose 2>/dev/null | sed 's/ (light).*//; s/ (dark).*//')
         COMPREPLY=( $(compgen -W "${themes}" -- ${cur}) )
         return 0
     fi
@@ -1262,7 +1230,7 @@ _farv() {
     if [[ ${prev} == "clone" ]]; then
         # Complete with local theme names only
         local themes
-        themes=$(farv list 2>/dev/null | sed 's/ (light).*//; s/ (dark).*//')
+        themes=$(farv list --verbose 2>/dev/null | sed 's/ (light).*//; s/ (dark).*//')
         COMPREPLY=( $(compgen -W "${themes}" -- ${cur}) )
         return 0
     fi
@@ -1330,11 +1298,11 @@ EOF
 generate_fish_completion() {
   cat <<'EOF'
 function __farv_complete_themes
-    farv list 2>/dev/null | sed 's/ (light).*//; s/ (dark).*//'
+    farv list --verbose 2>/dev/null | sed 's/ (light).*//; s/ (dark).*//'
 end
 
 function __farv_complete_themes_with_desc
-    farv list 2>/dev/null | while read -l line
+    farv list --verbose 2>/dev/null | while read -l line
         # Parse light themes
         if string match -q '* (light)*' -- "$line"
             set theme_name (string replace -r ' \(light\).*$' '' -- "$line")
@@ -1380,32 +1348,11 @@ end
 
 # Complete themes only after 'use' command
 function __farv_setup_theme_completions_for_use
-    farv list 2>/dev/null | while read -l line
-        # Parse light themes
-        if string match -q '* (light)*' -- "$line"
-            set theme_name (string replace -r ' \(light\).*$' '' -- "$line")
-            if string match -q '*[user]*' -- "$line"
-                if test -d "$FARV_SYSTEM_THEMES/light/$theme_name"
-                    set description "customized light system theme"
-                else
-                    set description "light user theme"
-                end
-            else
-                set description "light system theme"
-            end
-            complete -c farv -f -n '__fish_seen_subcommand_from use' -a "$theme_name" -d "$description"
-        # Parse dark themes
-        else if string match -q '* (dark)*' -- "$line"
-            set theme_name (string replace -r ' \(dark\).*$' '' -- "$line")
-            if string match -q '*[user]*' -- "$line"
-                if test -d "$FARV_SYSTEM_THEMES/dark/$theme_name"
-                    set description "customized dark system theme"
-                else
-                    set description "dark user theme"
-                end
-            else
-                set description "dark system theme"
-            end
+    farv list --verbose 2>/dev/null | while read -l line
+        # Parse: "theme-name (description)"
+        if string match -qr '^([^ ]+) \((.+)\)$' -- "$line"
+            set theme_name (string replace -r ' \(.*$' '' -- "$line")
+            set description (string replace -r '^[^ ]+ \(' '' -- "$line" | string replace -r '\)$' '' )
             complete -c farv -f -n '__fish_seen_subcommand_from use' -a "$theme_name" -d "$description"
         end
     end
@@ -1428,32 +1375,11 @@ complete -c farv -f -n '__fish_seen_subcommand_from new; and test (count (comman
 
 # Complete themes after 'clone' - use the same detailed completions as 'use'
 function __farv_setup_theme_completions_for_clone
-    farv list 2>/dev/null | while read -l line
-        # Parse light themes
-        if string match -q '* (light)*' -- "$line"
-            set theme_name (string replace -r ' \(light\).*$' '' -- "$line")
-            if string match -q '*[user]*' -- "$line"
-                if test -d "$FARV_SYSTEM_THEMES/light/$theme_name"
-                    set description "customized light system theme"
-                else
-                    set description "light user theme"
-                end
-            else
-                set description "light system theme"
-            end
-            complete -c farv -f -n '__fish_seen_subcommand_from clone' -a "$theme_name" -d "$description"
-        # Parse dark themes
-        else if string match -q '* (dark)*' -- "$line"
-            set theme_name (string replace -r ' \(dark\).*$' '' -- "$line")
-            if string match -q '*[user]*' -- "$line"
-                if test -d "$FARV_SYSTEM_THEMES/dark/$theme_name"
-                    set description "customized dark system theme"
-                else
-                    set description "dark user theme"
-                end
-            else
-                set description "dark system theme"
-            end
+    farv list --verbose 2>/dev/null | while read -l line
+        # Parse: "theme-name (description)"
+        if string match -qr '^([^ ]+) \((.+)\)$' -- "$line"
+            set theme_name (string replace -r ' \(.*$' '' -- "$line")
+            set description (string replace -r '^[^ ]+ \(' '' -- "$line" | string replace -r '\)$' '' )
             complete -c farv -f -n '__fish_seen_subcommand_from clone' -a "$theme_name" -d "$description"
         end
     end
