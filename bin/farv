@@ -37,7 +37,12 @@ discover_themes() {
       if [ -d "$theme_dir" ] && [ "$theme_dir" != "$FARV_USER_THEMES/$category/*/" ]; then
         local theme_name
         theme_name=$(basename "$theme_dir")
-        themes+=("$theme_name ($category) [user]")
+        # Check if this is a customized system theme or pure user theme
+        if [[ -d "$FARV_SYSTEM_THEMES/$category/$theme_name" ]]; then
+          themes+=("$theme_name (customized $category system theme)")
+        else
+          themes+=("$theme_name ($category user theme)")
+        fi
         seen_themes+=("$theme_name")
       fi
     done
@@ -51,7 +56,7 @@ discover_themes() {
         theme_name=$(basename "$theme_dir")
         # Only add if not already found in user themes
         if [[ ! " ${seen_themes[*]} " =~ $theme_name ]]; then
-          themes+=("$theme_name ($category)")
+          themes+=("$theme_name ($category system theme)")
         fi
       fi
     done
