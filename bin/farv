@@ -228,7 +228,7 @@ create_new_theme() {
   echo ""
   echo "Next steps:"
   echo "  1. Add configuration files to $target_dir"
-  echo "  2. Test with: farv $theme_name"
+  echo "  2. Test with: farv use $theme_name"
   echo ""
   echo "Note: Any executable files in the theme directory will be run when"
   echo "      switching to this theme. Use this for custom setup and reload scripts."
@@ -371,8 +371,8 @@ apply_theme() {
   done
 }
 
-# Function to switch theme (main entry point)
-switch_theme() {
+# Function to use theme (main entry point)
+use_theme_by_name() {
   local theme_input="$1"
   local theme_name theme_category
 
@@ -415,7 +415,7 @@ switch_theme() {
   # Create user config directory if it doesn't exist
   mkdir -p "$FARV_CONFIG_HOME"
 
-  echo "Applying theme: $theme_name ($theme_category)"
+  echo "Using theme: $theme_name ($theme_category)"
   apply_theme "$theme_name" "$theme_category"
   echo "Switched to theme: $theme_name"
 }
@@ -423,12 +423,12 @@ switch_theme() {
 # Interactive theme selection using fzf
 interactive_selection() {
   if has_command fzf; then
-    local selected_theme=$(list_themes | fzf --prompt="Select theme: " --height=10 --border)
+    local selected_theme=$(list_themes | fzf --prompt="Select theme to use: " --height=10 --border)
     if [[ -n "$selected_theme" ]]; then
-      switch_theme "$selected_theme"
+      use_theme_by_name "$selected_theme"
     fi
   else
-    echo "Usage: farv [theme-name|list]"
+    echo "Usage: farv use [theme-name]"
     echo ""
     list_themes
   fi
@@ -444,62 +444,61 @@ _farv() {
     typeset -A opt_args
 
     _arguments -C \
-        '1: :_farv_commands_and_themes' \
+        '1: :_farv_commands_only' \
         '2: :_farv_second_arg' \
         '3: :_farv_third_arg' \
         '*::arg:->args'
 }
 
-_farv_commands_and_themes() {
-    local -a themes_and_commands
-    themes_and_commands=(
+_farv_commands_only() {
+    local -a commands
+    commands=(
+        'use:Use a theme'
         'list:List all available themes'
         'customize:Customize a theme file'
         'new:Create a new user theme'
     )
-    # Add themes with proper descriptions
-    while IFS= read -r line; do
-        if [[ -n "$line" ]]; then
-            # Parse theme line to extract theme name and create description
-            if [[ "$line" == *" (light)"* ]]; then
-                local theme_name="${line%% \(light\)*}"
-                local description
-                if [[ "$line" == *"[user]" ]]; then
-                    # Check if system theme also exists
-                    if [[ -d "/usr/share/farv/themes/light/$theme_name" ]]; then
-                        description="customized light system theme"
-                    else
-                        description="light user theme"
-                    fi
-                else
-                    description="light system theme"
-                fi
-                themes_and_commands+=("${theme_name}:${description}")
-            elif [[ "$line" == *" (dark)"* ]]; then
-                local theme_name="${line%% \(dark\)*}"
-                local description
-                if [[ "$line" == *"[user]" ]]; then
-                    # Check if system theme also exists
-                    if [[ -d "/usr/share/farv/themes/dark/$theme_name" ]]; then
-                        description="customized dark system theme"
-                    else
-                        description="dark user theme"
-                    fi
-                else
-                    description="dark system theme"
-                fi
-                themes_and_commands+=("${theme_name}:${description}")
-            else
-                # Fallback for themes that don't match expected format
-                themes_and_commands+=("$line")
-            fi
-        fi
-    done < <(farv list 2>/dev/null)
-    _describe 'themes and commands' themes_and_commands
+    _describe 'commands' commands
 }
 
 _farv_second_arg() {
     case $words[2] in
+        use)
+            # Show themes for use command - simpler approach to avoid variable leakage
+            local -a themes theme_name description
+            local theme_list=$(farv list 2>/dev/null)
+            
+            while IFS= read -r line; do
+                if [[ -n "$line" ]]; then
+                    if [[ "$line" == *" (light)"* ]]; then
+                        theme_name="${line%% \(light\)*}"
+                        if [[ "$line" == *"[user]" ]]; then
+                            if [[ -d "/usr/share/farv/themes/light/$theme_name" ]]; then
+                                description="customized light system theme"
+                            else
+                                description="light user theme"
+                            fi
+                        else
+                            description="light system theme"
+                        fi
+                        themes+=("${theme_name}:${description}")
+                    elif [[ "$line" == *" (dark)"* ]]; then
+                        theme_name="${line%% \(dark\)*}"
+                        if [[ "$line" == *"[user]" ]]; then
+                            if [[ -d "/usr/share/farv/themes/dark/$theme_name" ]]; then
+                                description="customized dark system theme"
+                            else
+                                description="dark user theme"
+                            fi
+                        else
+                            description="dark system theme"
+                        fi
+                        themes+=("${theme_name}:${description}")
+                    fi
+                fi
+            done <<< "$theme_list"
+            _describe 'themes' themes
+            ;;
         customize)
             # Show current theme files for customize
             local -a current_files
@@ -544,6 +543,13 @@ _farv() {
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     
+    # Handle use subcommand
+    if [[ ${prev} == "use" ]]; then
+        local themes=$(farv list 2>/dev/null | sed 's/ (light).*//; s/ (dark).*//')
+        COMPREPLY=( $(compgen -W "${themes}" -- ${cur}) )
+        return 0
+    fi
+    
     # Handle customize subcommand
     if [[ ${prev} == "customize" ]]; then
         local current_files=""
@@ -573,17 +579,12 @@ _farv() {
         return 0
     fi
     
-    # First argument - include new and customize as options along with themes
+    # First argument - show commands only
     if [[ ${COMP_CWORD} == 1 ]]; then
-        local themes=$(farv list 2>/dev/null | sed 's/ (light).*//; s/ (dark).*//')
-        local commands="list customize new"
-        COMPREPLY=( $(compgen -W "${themes} ${commands}" -- ${cur}) )
+        local commands="use list customize new"
+        COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
         return 0
     fi
-    
-    local themes=$(farv list 2>/dev/null | sed 's/ (light).*//; s/ (dark).*//')
-    COMPREPLY=( $(compgen -W "${themes}" -- ${cur}) )
-    return 0
 }
 
 complete -F _farv farv
@@ -642,9 +643,8 @@ function __farv_complete_current_files
     end
 end
 
-# Complete themes and commands for first argument
-# Generate individual complete commands for each theme
-function __farv_setup_theme_completions
+# Complete themes only after 'use' command
+function __farv_setup_theme_completions_for_use
     farv list 2>/dev/null | while read -l line
         # Parse light themes
         if string match -q '* (light)*' -- "$line"
@@ -658,7 +658,7 @@ function __farv_setup_theme_completions
             else
                 set description "light system theme"
             end
-            complete -c farv -f -n '__fish_is_first_token' -a "$theme_name" -d "$description"
+            complete -c farv -f -n '__fish_seen_subcommand_from use' -a "$theme_name" -d "$description"
         # Parse dark themes
         else if string match -q '* (dark)*' -- "$line"
             set theme_name (string replace -r ' \(dark\).*$' '' -- "$line")
@@ -671,13 +671,15 @@ function __farv_setup_theme_completions
             else
                 set description "dark system theme"
             end
-            complete -c farv -f -n '__fish_is_first_token' -a "$theme_name" -d "$description"
+            complete -c farv -f -n '__fish_seen_subcommand_from use' -a "$theme_name" -d "$description"
         end
     end
 end
 
-__farv_setup_theme_completions
+__farv_setup_theme_completions_for_use
 
+# Commands only at top level
+complete -c farv -f -n '__fish_is_first_token' -a 'use' -d 'Use a theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'list' -d 'List available themes'
 complete -c farv -f -n '__fish_is_first_token' -a 'customize' -d 'Customize theme file'
 complete -c farv -f -n '__fish_is_first_token' -a 'new' -d 'Create new theme'
@@ -700,8 +702,8 @@ show_help() {
 farv - A  friend in rice is a friend that's nice :-)
 
 USAGE:
-    farv [THEME]                     Switch to specified theme
-    farv                             Interactive theme selection (requires fzf)
+    farv use [THEME]                 Use specified theme
+    farv use                         Interactive theme selection (requires fzf)
     farv list                        List all available themes
     farv new <category> <name>       Create a new user theme
     farv customize <filename>        Copy theme file to user directory for customization
@@ -709,13 +711,13 @@ USAGE:
     farv --generate-completion SHELL Generate completion script for shell
 
 EXAMPLES:
-    farv rose-pine-dawn              Switch to rose-pine-dawn theme
-    farv "tokyonight-night (dark)"   Switch using full theme name with category
+    farv use rose-pine-dawn          Use rose-pine-dawn theme
+    farv use "tokyonight-night (dark)" Use theme with full name
+    farv use                         Open interactive theme selector
     farv new dark my-theme           Create new dark theme
     farv new light my-theme          Create new light theme
     farv customize btop.theme        Copy btop.theme to user directory for editing
     farv list                        Show all available themes
-    farv                             Open interactive theme selector
 
 NEW THEME CREATION:
     After running 'farv new <category> <name>', add configuration files to:
@@ -792,10 +794,39 @@ case "${1:-}" in
   
   create_new_theme "$theme_name" "$category"
   ;;
+"use")
+  if [ -z "$2" ]; then
+    # Interactive selection when no theme specified
+    interactive_selection
+  else
+    # Use specific theme
+    use_theme_by_name "$2"
+  fi
+  ;;
 "")
-  interactive_selection
+  # Show available commands when no argument provided
+  echo "Usage: farv <command> [arguments]"
+  echo ""
+  echo "Available commands:"
+  echo "  use <theme>       Use a theme"
+  echo "  list              List available themes"
+  echo "  new <cat> <name>  Create new theme"
+  echo "  customize <file>  Customize theme file"
+  echo ""
+  echo "For help: farv --help"
   ;;
 *)
-  switch_theme "$1"
+  # Unknown command
+  echo "Error: Unknown command '$1'"
+  echo "Usage: farv <command> [arguments]"
+  echo ""
+  echo "Available commands:"
+  echo "  use <theme>       Use a theme"
+  echo "  list              List available themes"
+  echo "  new <cat> <name>  Create new theme"
+  echo "  customize <file>  Customize theme file"
+  echo ""
+  echo "For help: farv --help"
+  exit 1
   ;;
 esac
