@@ -276,6 +276,27 @@ get_current_theme_info() {
   return 1
 }
 
+# Function to show available commands
+show_commands() {
+  echo "Usage: farv <command> [arguments]"
+  echo ""
+  echo "Available commands:"
+  echo "  use [theme]         Use a theme (interactive if fzf available)"
+  echo "  list                List available themes"
+  echo "  current             Show current active theme"
+  echo "  reload              Reload current active theme"
+  echo "  next                Cycle to next theme"
+  echo "  prev                Cycle to previous theme"
+  echo "  random              Switch to random theme"
+  echo "  new <cat> <name>    Create new theme"
+  echo "  clone <src> [name]  Clone existing theme"
+  echo "  customize <file>    Customize theme file"
+  echo "  pack [filename]     Package current theme"
+  echo "  install <archive>   Install theme package"
+  echo ""
+  echo "For help: farv --help"
+}
+
 # Function to get current active theme (for pack command)
 get_current_active_theme() {
   local theme_info
@@ -1754,9 +1775,9 @@ case "${1:-}" in
     echo "Usage: farv clone <source-theme> [new-name] [--category light|dark]"
     echo ""
     echo "Examples:"
-    echo "  farv clone rose-pine-dawn my-theme    Clone with new name"
-    echo "  farv clone rose-pine-dawn             Clone system theme to user space"
-    echo "  farv clone tokyonight-night --category light  Clone with different category"
+    echo "  farv clone rose-pine-dawn my-theme              Clone with new name"
+    echo "  farv clone rose-pine-dawn                       Clone system theme to user space"
+    echo "  farv clone tokyonight-night --category light    Clone with different category"
     echo ""
     echo "Available themes:"
     list_themes
@@ -1902,34 +1923,12 @@ case "${1:-}" in
   ;;
 "")
   # Show available commands when no argument provided
-  echo "Usage: farv <command> [arguments]"
-  echo ""
-  echo "Available commands:"
-  echo "  use <theme>       Use a theme"
-  echo "  list              List available themes"
-  echo "  new <cat> <name>  Create new theme"
-  echo "  clone <src> [name] Clone existing theme"
-  echo "  customize <file>  Customize theme file"
-  echo "  pack [filename]   Package current theme"
-  echo "  install <archive> Install theme package"
-  echo ""
-  echo "For help: farv --help"
+  show_commands
   ;;
 *)
   # Unknown command
   echo "Error: Unknown command '$1'"
-  echo "Usage: farv <command> [arguments]"
-  echo ""
-  echo "Available commands:"
-  echo "  use <theme>       Use a theme"
-  echo "  list              List available themes"
-  echo "  new <cat> <name>  Create new theme"
-  echo "  clone <src> [name] Clone existing theme"
-  echo "  customize <file>  Customize theme file"
-  echo "  pack [filename]   Package current theme"
-  echo "  install <archive> Install theme package"
-  echo ""
-  echo "For help: farv --help"
+  show_commands
   exit 1
   ;;
 esac
