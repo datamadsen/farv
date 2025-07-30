@@ -246,3 +246,7 @@ Remember to make your scripts executable for them to run:
 chmod +x ~/.config/farv/themes/dark/my-theme/gtk.sh
 ```
 
+At the time of writing this, the included scripts to change wallpaper, reload
+tmux configuration etc. is pretty sparse and specific to the tools I use at the
+moment. If you write scripts that you think can benefit more than just you,
+please consider sharing it in an issue and/or pull request.
