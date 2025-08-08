@@ -12,9 +12,9 @@ fi
 # Detect platform
 PLATFORM="unknown"
 case "$(uname -s)" in
-  Linux*)   PLATFORM="linux" ;;
-  Darwin*)  PLATFORM="macos" ;;
-  *)        PLATFORM="unknown" ;;
+Linux*) PLATFORM="linux" ;;
+Darwin*) PLATFORM="macos" ;;
+*) PLATFORM="unknown" ;;
 esac
 
 echo "[farv] Detected platform: $PLATFORM"
@@ -34,7 +34,7 @@ if [ "$PLATFORM" = "macos" ]; then
   BASH_COMPLETION_DIR="$SHARE_DIR/bash-completion/completions"
   ZSH_COMPLETION_DIR="$SHARE_DIR/zsh/site-functions"
   FISH_COMPLETION_DIR="$SHARE_DIR/fish/vendor_completions.d"
-  SUDO_CMD=""  # macOS users typically don't need sudo for /usr/local
+  SUDO_CMD="" # macOS users typically don't need sudo for /usr/local
 elif [ "$PLATFORM" = "linux" ]; then
   # Linux paths
   BIN_DIR="/usr/bin"
@@ -121,10 +121,6 @@ if [ ! -f "$FARV_CONFIG_HOME/config" ]; then
 # DEFAULT_CATEGORY="dark"
 EOF
 fi
-
-# Clean up old installation if it exists
-echo "[farv] Cleaning up old installation"
-rm -rf ~/.farv 2>/dev/null || true
 
 echo ""
 echo "[farv] Installation complete!"
