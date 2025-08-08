@@ -2,7 +2,7 @@
 
 **A friend in rice is a friend that's nice**
 
-farv is a layered theme management system that lets you build and switch
+farv is a layered theme management system that helps building and switching
 between complete desktop themes using a powerful hierarchy concept.
 
 ## The Layer Concept
@@ -31,8 +31,6 @@ creating a symbolic link from `~/.config/farv/current/alacritty.toml` to
 that file.
 
 ### Why This Matters
-
-This layering system gives you incredible flexibility:
 
 **Override specific files**: Want to use `tokyonight-night` but with your
 own wallpaper? Just put `wallpaper.png` in your user theme directory.
@@ -169,6 +167,14 @@ source-file ~/.config/farv/current/tmux.conf
 **neovim** (`~/.config/nvim/`)
 Create a symlink from your plugins directory to the relevant farv file.
 
+```bash
+ln -s ~/.config/farv/current/neovim.lua/ ~/.config/nvim/lua/plugins/farv.lua
+```
+
+**wofi** (`~/.config/wofi`)
+Wofi is started with a reference to a stylesheet. Just reference the stylesheet
+in the farv theme.
+
 ## Installation
 
 ```bash
@@ -176,6 +182,9 @@ git clone https://github.com/datamadsen/farv.git
 cd farv
 sudo ./install.sh
 ```
+
+**Note:** Installation has only been tested on Arch Linux at the time of writing this, so
+check what the install script does and adapt it to your system if necessary.
 
 ## Advanced Features
 
@@ -250,3 +259,9 @@ At the time of writing this, the included scripts to change wallpaper, reload
 tmux configuration etc. is pretty sparse and specific to the tools I use at the
 moment. If you write scripts that you think can benefit more than just you,
 please consider sharing it in an issue and/or pull request.
+
+## Contributing
+
+Contributions are welcome! There isn't really any guidelines - just be yourself.
+
+Contribute via PR or even with a
