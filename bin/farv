@@ -1658,42 +1658,42 @@ EOF
 # Show help information
 show_help() {
   cat <<'EOF'
-farv - A  friend in rice is a friend that's nice :-)
+farv - A friend in rice is a friend that's nice :-)
 
 USAGE:
-    farv use [THEME]                 Use specified theme
-    farv use                         Interactive theme selection (requires fzf)
-    farv list [-v|--verbose]         List all available themes
-    farv current [-v|--verbose]      Show current active theme
-    farv reload                      Reload current active theme
-    farv next                        Cycle to next theme
-    farv prev                        Cycle to previous theme
-    farv random                      Switch to random theme
-    farv new <category> <name>       Create a new user theme
-    farv clone <source> [name]       Clone existing local theme
-    farv customize <filename>        Copy theme file to user directory for customization
-    farv pack [filename]             Package current theme for sharing
-    farv install <archive>           Install theme from package
-    farv --help                      Show this help message
-    farv --generate-completion SHELL Generate completion script for shell
+    farv use [THEME]                     Use specified theme
+    farv use                             Interactive theme selection (requires fzf)
+    farv list [-v|--verbose]             List all available themes
+    farv current [-v|--verbose]          Show current active theme
+    farv reload                          Reload current active theme
+    farv next                            Cycle to next theme
+    farv prev                            Cycle to previous theme
+    farv random                          Switch to random theme
+    farv new <category> <name>           Create a new user theme
+    farv clone <source> [name]           Clone existing local theme
+    farv customize <filename>            Copy theme file to user directory for customization
+    farv pack [filename]                 Package current theme for sharing
+    farv install <archive>               Install theme from package
+    farv --help                          Show this help message
+    farv --generate-completion SHELL     Generate completion script for shell
 
 EXAMPLES:
-    farv use rose-pine-dawn          Use rose-pine-dawn theme
-    farv use "tokyonight-night (dark)" Use theme with full name
-    farv use                         Open interactive theme selector
-    farv new dark my-theme           Create new dark theme
-    farv new light my-theme          Create new light theme
-    farv clone rose-pine-dawn my-rose Clone local theme with new name
-    farv clone rose-pine-dawn        Clone system theme to user space
-    farv clone tokyonight-night --category light Clone with different category
-    farv customize btop.theme        Copy btop.theme to user directory for editing
-    farv pack                        Pack current theme as farv-theme-name-date.tar.gz
-    farv pack my-theme.tar.gz        Pack with custom filename
-    farv pack --output ~/themes/     Pack to specific directory
-    farv install theme.tar.gz        Install theme package
-    farv install --name custom theme.tar.gz  Install with different name
-    farv install --preview theme.tar.gz      Preview package contents
-    farv list                        Show all available themes
+    farv list                            Show all available themes
+    farv use                             Open interactive theme selector
+    farv use rose-pine-dawn              Use rose-pine-dawn theme
+    farv new dark my-theme               Create new dark theme
+    farv new light my-theme              Create new light theme
+    farv clone rose-pine-dawn            Clone system theme to user space
+    farv clone rose-pine-dawn my-rose    Clone local theme with new name
+    farv clone rose-pine-dawn --category dark
+                                         Clone with different category
+    farv customize btop.theme            Copy btop.theme to user directory for editing
+    farv pack                            Pack current theme as farv-theme-name-date.tar.gz
+    farv pack my-theme.tar.gz            Pack with custom filename
+    farv pack --output ~/themes/         Pack to specific directory
+    farv install theme.tar.gz            Install theme package
+    farv install theme.tar.gz --name foo Install theme package with different name
+    farv install theme.tar.gz --preview  Preview package contents
 
 NEW THEME CREATION:
     After running 'farv new <category> <name>', add configuration files to:
