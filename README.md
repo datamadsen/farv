@@ -5,6 +5,8 @@
 farv is a layered theme management system that helps building and switching
 between complete desktop themes using a powerful hierarchy concept.
 
+The word "farv" is Danish and means "color" as in an imperative verb - aka. a command.
+
 ## The Layer Concept
 
 Think of farv themes like transparent sheets stacked on top of each other.
@@ -84,6 +86,7 @@ farv list
 ### Use a theme
 
 ```bash
+farv use <tab> # tab completion shows available themes
 farv use rose-pine-dawn
 ```
 
@@ -106,85 +109,6 @@ farv next      # Next theme alphabetically
 farv prev      # Previous theme
 farv random    # Random theme
 ```
-
-## Creating Your First Override
-
-Let's customize an existing theme:
-
-```bash
-# Create your override directory
-mkdir -p ~/.config/farv/themes/dark/tokyonight-night
-
-# Copy your current wallpaper
-cp ~/Pictures/my-wallpaper.png \
-  ~/.config/farv/themes/dark/tokyonight-night/wallpaper.png
-
-# Apply the theme - now uses your wallpaper!
-farv use tokyonight-night
-```
-
-## Directory Structure
-
-```
-/usr/share/farv/themes/         # System themes (managed by farv)
-├── light/
-│   └── rose-pine-dawn/         # Complete theme
-├── dark/
-│   └── tokyonight-night/       # Complete theme
-└── common-script.sh            # Global system script
-
-~/.config/farv/themes/          # Your custom themes and overrides
-├── light/
-│   ├── rose-pine-dawn/         # Your overrides for this theme
-│   └── custom-light-script.sh  # Shared across all your light themes
-├── dark/
-│   ├── tokyonight-night/       # Your overrides for this theme
-│   └── custom-dark-script.sh   # Shared across all your dark themes
-└── global-script.sh            # Your global fallback script
-
-~/.config/farv/current/         # Active theme (symbolic links)
-├── alacritty.toml -> /usr/share/farv/themes/dark/tokyonight-night/alacritty.toml
-├── wallpaper.png -> ~/.config/farv/themes/dark/tokyonight-night/wallpaper.png
-└── ...
-```
-
-## Application Setup
-
-Configure your applications to read from `~/.config/farv/current/`:
-
-**Alacritty** (`~/.config/alacritty/alacritty.toml`):
-
-```toml
-import = ["~/.config/farv/current/alacritty.toml"]
-```
-
-**tmux** (`~/.config/tmux/tmux.conf`):
-
-```bash
-source-file ~/.config/farv/current/tmux.conf
-```
-
-**neovim** (`~/.config/nvim/`)
-Create a symlink from your plugins directory to the relevant farv file.
-
-```bash
-ln -s ~/.config/farv/current/neovim.lua/ ~/.config/nvim/lua/plugins/farv.lua
-```
-
-**wofi** (`~/.config/wofi`)
-Wofi is started with a reference to a stylesheet. Just reference the stylesheet
-in the farv theme.
-
-## Installation
-
-```bash
-git clone https://github.com/datamadsen/farv.git
-cd farv
-sudo ./install.sh
-```
-
-**Note:** Installation has only been tested on Arch Linux at the time of writing this, so
-check what the install script does and adapt it to your system if necessary.
 
 ## Advanced Features
 
@@ -212,7 +136,7 @@ farv customize ghostty  # Copy the ghostty file to your override directory
 ### Reload Theme
 
 ```bash
-farv reload                    # Reapply current theme
+farv reload # Reapply current theme
 ```
 
 ### Scripts
@@ -260,8 +184,74 @@ tmux configuration etc. is pretty sparse and specific to the tools I use at the
 moment. If you write scripts that you think can benefit more than just you,
 please consider sharing it in an issue and/or pull request.
 
+## Application Setup
+
+Configure your applications to read from `~/.config/farv/current/`:
+
+**Alacritty** (`~/.config/alacritty/alacritty.toml`):
+
+```toml
+import = ["~/.config/farv/current/alacritty.toml"]
+```
+
+**tmux** (`~/.config/tmux/tmux.conf`):
+
+```bash
+source-file ~/.config/farv/current/tmux.conf
+```
+
+**neovim** (`~/.config/nvim/`)
+Create a symlink from your plugins directory to the relevant farv file.
+
+```bash
+ln -s ~/.config/farv/current/neovim.lua/ ~/.config/nvim/lua/plugins/farv.lua
+```
+
+**wofi** (`~/.config/wofi`)
+Wofi is started with a reference to a stylesheet. Just reference the stylesheet
+in the farv theme.
+
+## Installation
+
+```bash
+git clone https://github.com/datamadsen/farv.git
+cd farv
+sudo ./install.sh
+```
+
+**Note:** Installation has only been tested on Arch Linux at the time of writing this, so
+check what the install script does and adapt it to your system if necessary.
+Here are the cliff notes:
+
+- Platform Detection: Detects whether running on Linux or macOS
+
+- Path Configuration: Sets appropriate installation paths
+based on platform (Homebrew paths on macOS, system paths on
+Linux)
+
+- Binary Installation: Copies the farv binary to system binary
+  directory (/usr/bin on Linux, Homebrew prefix on macOS)
+
+- Theme Installation: Creates system directories and copies
+light/dark themes to /usr/share/farv/themes/ (or macOS
+equivalent)
+
+- Library Installation: Installs utility libraries to system
+share directory
+
+- Shell Completion Setup: Generates and installs tab
+completion scripts for bash, zsh, and fish shells
+
+- User Configuration: Creates user config directory at
+~/.config/farv/ with default config file
+
+- Permission Handling: Uses sudo on Linux, but not on macOS
+when using Homebrew paths
+
+- Validation: Checks that required files (bin/farv, themes/)
+exist before proceeding
+
 ## Contributing
 
 Contributions are welcome! There isn't really any guidelines - just be yourself.
-
-Contribute via PR or even with a
+Contribute via PR or even with a tar file produced with `farv pack`.
