@@ -255,3 +255,7 @@ exist before proceeding
 
 Contributions are welcome! There isn't really any guidelines - just be yourself.
 Contribute via PR or even with a tar file produced with `farv pack`.
+
+## Screenshot
+
+![Farv help screenshot](screenshot.png "Farv help screenshot")
