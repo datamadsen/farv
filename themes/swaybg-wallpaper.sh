@@ -11,16 +11,19 @@ if ! pgrep -x swaybg &>/dev/null; then
   exit 0
 fi
 
-# Look for wallpaper files in the current theme directory
+# Look for current-background in the backgrounds folder
 THEME_DIR="$XDG_CONFIG_HOME/farv/current"
 WALLPAPER=""
 
-if [[ -f "$THEME_DIR/wallpaper.jpg" ]]; then
-  WALLPAPER="$THEME_DIR/wallpaper.jpg"
-elif [[ -f "$THEME_DIR/wallpaper.png" ]]; then
-  WALLPAPER="$THEME_DIR/wallpaper.png"
+# Use current selection from backgrounds folder
+if [[ -L "$THEME_DIR/backgrounds/current-background" ]]; then
+  WALLPAPER=$(readlink "$THEME_DIR/backgrounds/current-background")
+  # Resolve relative symlinks
+  if [[ ! "$WALLPAPER" = /* ]]; then
+    WALLPAPER="$THEME_DIR/backgrounds/$WALLPAPER"
+  fi
 else
-  log_action "No wallpaper .jpg or .png found in theme directory ($THEME_DIR)."
+  log_action "No current-background symlink found in $THEME_DIR/backgrounds/"
   exit 0
 fi
 

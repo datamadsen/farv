@@ -146,10 +146,32 @@ resolve_file_path() {
   local theme_name="$2"
   local filename="$3"
 
+  # Special handling for backgrounds folder
+  if [ "$filename" = "backgrounds" ]; then
+    resolve_backgrounds_path "$category" "$theme_name"
+    return $?
+  fi
+
   while IFS= read -r search_path; do
     local file_path="$search_path/$filename"
     if [ -f "$file_path" ] && [ ! -x "$file_path" ]; then
       echo "$file_path"
+      return 0
+    fi
+  done < <(get_search_paths "$category" "$theme_name")
+
+  return 1
+}
+
+# Function to resolve backgrounds folder path with search priority
+resolve_backgrounds_path() {
+  local category="$1"
+  local theme_name="$2"
+
+  while IFS= read -r search_path; do
+    local backgrounds_path="$search_path/backgrounds"
+    if [ -d "$backgrounds_path" ]; then
+      echo "$backgrounds_path"
       return 0
     fi
   done < <(get_search_paths "$category" "$theme_name")
@@ -165,6 +187,15 @@ discover_theme_files() {
 
   while IFS= read -r search_path; do
     if [ -d "$search_path" ]; then
+      # Check for backgrounds folder
+      if [ -d "$search_path/backgrounds" ]; then
+        # Add backgrounds folder as a discoverable "file"
+        if [[ ! " ${files[*]} " =~ "backgrounds" ]]; then
+          files+=("backgrounds")
+        fi
+      fi
+
+      # Discover regular files
       for file in "$search_path"/*; do
         if [ -f "$file" ] && [ ! -x "$file" ]; then
           local filename
@@ -284,6 +315,7 @@ show_commands() {
   echo "  use [theme]         Use a theme (interactive if fzf available)"
   echo "  list                List available themes"
   echo "  current             Show current active theme"
+  echo "  background          Manage theme backgrounds"
   echo "  reload              Reload current active theme"
   echo "  next                Cycle to next theme"
   echo "  prev                Cycle to previous theme"
@@ -546,10 +578,36 @@ apply_theme() {
   # 3. For each unique filename, resolve and symlink highest priority version
   local filename
   for filename in "${files[@]}"; do
-    local resolved_path
-    resolved_path=$(resolve_file_path "$theme_category" "$theme_name" "$filename")
-    if [ -n "$resolved_path" ]; then
-      ln -sf "$resolved_path" "$FARV_CURRENT_LINK/$filename"
+    if [ "$filename" = "backgrounds" ]; then
+      # Handle backgrounds folder specially
+      local resolved_backgrounds_path
+      resolved_backgrounds_path=$(resolve_backgrounds_path "$theme_category" "$theme_name")
+      if [ -n "$resolved_backgrounds_path" ]; then
+        # Create backgrounds directory in current theme
+        mkdir -p "$FARV_CURRENT_LINK/backgrounds"
+        # Symlink all background files
+        local first_background=""
+        for bg_file in "$resolved_backgrounds_path"/*; do
+          if [ -f "$bg_file" ] && [[ ! "$(basename "$bg_file")" == "current-background" ]]; then
+            ln -sf "$bg_file" "$FARV_CURRENT_LINK/backgrounds/$(basename "$bg_file")"
+            # Remember the first background for default selection
+            if [ -z "$first_background" ]; then
+              first_background="$(basename "$bg_file")"
+            fi
+          fi
+        done
+        # Create current-background symlink to first available background
+        if [ -n "$first_background" ]; then
+          ln -sf "$first_background" "$FARV_CURRENT_LINK/backgrounds/current-background"
+        fi
+      fi
+    else
+      # Existing file resolution logic
+      local resolved_path
+      resolved_path=$(resolve_file_path "$theme_category" "$theme_name" "$filename")
+      if [ -n "$resolved_path" ]; then
+        ln -sf "$resolved_path" "$FARV_CURRENT_LINK/$filename"
+      fi
     fi
   done
 
@@ -1335,6 +1393,7 @@ _farv_commands_only() {
         'use:Use a theme'
         'list:List all available themes'
         'current:Show current active theme'
+        'background:Manage theme backgrounds'
         'reload:Reload current active theme'
         'next:Cycle to next theme'
         'prev:Cycle to previous theme'
@@ -1435,12 +1494,39 @@ _farv_second_arg() {
             )
             _describe 'current options' current_flags
             ;;
+        background)
+            # Complete background subcommands
+            local -a background_commands
+            background_commands=(
+                'list:List available backgrounds'
+                'current:Show current background'
+                'set:Set current background'
+                'next:Switch to next background'
+                'prev:Switch to previous background'
+                'random:Switch to random background'
+            )
+            _describe 'background commands' background_commands
+            ;;
     esac
 }
 
 _farv_third_arg() {
     if [[ $words[2] == "new" && ($words[3] == "light" || $words[3] == "dark") ]]; then
         # Third argument after "farv new [category]" - allow free text for theme name
+        return 0
+    fi
+
+    if [[ $words[2] == "background" && $words[3] == "set" ]]; then
+        # Complete background filenames for "farv background set"
+        local -a background_files
+        if [[ -d "${XDG_CONFIG_HOME:-$HOME/.config}/farv/current/backgrounds" ]]; then
+            for file in "${XDG_CONFIG_HOME:-$HOME/.config}/farv/current/backgrounds"/*.{jpg,jpeg,png}; do
+                if [[ -f "$file" && "$(basename "$file")" != "current-background" ]]; then
+                    background_files+=("$(basename "$file")")
+                fi
+            done
+        fi
+        _describe 'background files' background_files
         return 0
     fi
 }
@@ -1484,7 +1570,24 @@ _farv() {
         COMPREPLY=( $(compgen -W "${current_files}" -- ${cur}) )
         return 0
     fi
-    
+
+    # Handle background subcommand
+    if [[ ${prev} == "background" ]]; then
+        local subcommands="list current set next prev random"
+        COMPREPLY=( $(compgen -W "${subcommands}" -- ${cur}) )
+        return 0
+    fi
+
+    # Handle background set subcommand
+    if [[ ${COMP_WORDS[COMP_CWORD-2]} == "background" && ${prev} == "set" ]]; then
+        local background_files=""
+        if [ -d "${XDG_CONFIG_HOME:-$HOME/.config}/farv/current/backgrounds" ]; then
+            background_files=$(ls "${XDG_CONFIG_HOME:-$HOME/.config}/farv/current/backgrounds"/*.{jpg,jpeg,png} 2>/dev/null | grep -v "current-background" | xargs -n1 basename | tr '\n' ' ')
+        fi
+        COMPREPLY=( $(compgen -W "${background_files}" -- ${cur}) )
+        return 0
+    fi
+
     # Handle new subcommand
     if [[ ${prev} == "new" ]]; then
         # Complete with categories (required)
@@ -1524,7 +1627,7 @@ _farv() {
     
     # First argument - show commands only
     if [[ ${COMP_CWORD} == 1 ]]; then
-        local commands="use list current reload next prev random customize new clone pack install"
+        local commands="use list current background reload next prev random customize new clone pack install"
         COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
         return 0
     fi
@@ -1604,6 +1707,7 @@ __farv_setup_theme_completions_for_use
 complete -c farv -f -n '__fish_is_first_token' -a 'use' -d 'Use a theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'list' -d 'List available themes'
 complete -c farv -f -n '__fish_is_first_token' -a 'current' -d 'Show current active theme'
+complete -c farv -f -n '__fish_is_first_token' -a 'background' -d 'Manage theme backgrounds'
 complete -c farv -f -n '__fish_is_first_token' -a 'reload' -d 'Reload current active theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'next' -d 'Cycle to next theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'prev' -d 'Cycle to previous theme'
@@ -1644,6 +1748,27 @@ complete -c farv -f -n '__fish_seen_subcommand_from list ls' -l verbose -d 'Show
 # Complete flags for current command
 complete -c farv -f -n '__fish_seen_subcommand_from current' -s v -d 'Show verbose descriptions'
 complete -c farv -f -n '__fish_seen_subcommand_from current' -l verbose -d 'Show verbose descriptions'
+
+# Complete background subcommands
+complete -c farv -f -n '__fish_seen_subcommand_from background' -a 'list' -d 'List available backgrounds'
+complete -c farv -f -n '__fish_seen_subcommand_from background' -a 'current' -d 'Show current background'
+complete -c farv -f -n '__fish_seen_subcommand_from background' -a 'set' -d 'Set current background'
+complete -c farv -f -n '__fish_seen_subcommand_from background' -a 'next' -d 'Switch to next background'
+complete -c farv -f -n '__fish_seen_subcommand_from background' -a 'prev' -d 'Switch to previous background'
+complete -c farv -f -n '__fish_seen_subcommand_from background' -a 'random' -d 'Switch to random background'
+
+# Complete background filenames for 'set' subcommand
+function __farv_complete_background_files
+    if test -d "$XDG_CONFIG_HOME/farv/current/backgrounds"; or test -d "$HOME/.config/farv/current/backgrounds"
+        for file in "$XDG_CONFIG_HOME/farv/current/backgrounds"/*.{jpg,jpeg,png} "$HOME/.config/farv/current/backgrounds"/*.{jpg,jpeg,png}
+            if test -f "$file"; and not string match -q "*current-background*" -- "$file"
+                basename "$file"
+            end
+        end
+    end
+end
+
+complete -c farv -f -n '__fish_seen_subcommand_from background; and __fish_seen_subcommand_from set' -a '(__farv_complete_background_files)' -d 'Background files'
 
 # Standard options
 complete -c farv -s l -l list -d 'List available themes'
@@ -1708,6 +1833,290 @@ CUSTOMIZATION:
     
     The next time you apply the theme, your custom version will be used.
 EOF
+}
+
+# ----------------------------------------------------------------------------
+# Background Management Functions
+# ----------------------------------------------------------------------------
+
+list_backgrounds() {
+    if [[ ! -d "$FARV_CURRENT_LINK/backgrounds" ]]; then
+        echo "No backgrounds folder found for current theme"
+        return 1
+    fi
+
+    echo "Available backgrounds for current theme:"
+
+    # Get current selection
+    local current_bg=""
+    if [[ -L "$FARV_CURRENT_LINK/backgrounds/current-background" ]]; then
+        current_bg=$(basename "$(readlink "$FARV_CURRENT_LINK/backgrounds/current-background")")
+    fi
+
+    # List all backgrounds
+    local found_any=false
+    for bg in "$FARV_CURRENT_LINK/backgrounds"/*.{jpg,jpeg,png}; do
+        if [[ -f "$bg" ]]; then
+            local bg_name=$(basename "$bg")
+            if [[ "$bg_name" == "$current_bg" ]]; then
+                echo "  * $bg_name (current)"
+            else
+                echo "    $bg_name"
+            fi
+            found_any=true
+        fi
+    done
+
+    if [[ "$found_any" == "false" ]]; then
+        echo "  No background images found"
+    fi
+}
+
+set_background() {
+    local background_name="$1"
+
+    if [[ -z "$background_name" ]]; then
+        echo "Error: Background filename required"
+        return 1
+    fi
+
+    # Check if the background exists in current theme
+    if [[ ! -f "$FARV_CURRENT_LINK/backgrounds/$background_name" ]]; then
+        echo "Error: Background file '$background_name' not found"
+        echo "Available backgrounds:"
+        list_backgrounds
+        return 1
+    fi
+
+    # Update the current-background symlink in current theme
+    ln -sf "$background_name" "$FARV_CURRENT_LINK/backgrounds/current-background"
+
+    # Run wallpaper scripts to apply the new background
+    echo "Setting background to $background_name..."
+    local scripts
+    readarray -t scripts < <(find "$FARV_SYSTEM_DIR/themes" "$FARV_USER_THEMES" -name "*wallpaper*" -type f -executable 2>/dev/null)
+
+    for script in "${scripts[@]}"; do
+        if [[ -x "$script" ]]; then
+            echo "  - $(basename "$script")"
+            "$script"
+        fi
+    done
+}
+
+show_current_background() {
+    if [[ -L "$FARV_CURRENT_LINK/backgrounds/current-background" ]]; then
+        local current_bg
+        current_bg=$(basename "$(readlink "$FARV_CURRENT_LINK/backgrounds/current-background")")
+        echo "Current background: $current_bg"
+    else
+        echo "No background selection found"
+    fi
+}
+
+cycle_to_next_background() {
+    if [[ ! -d "$FARV_CURRENT_LINK/backgrounds" ]]; then
+        echo "No backgrounds folder found for current theme"
+        return 1
+    fi
+
+    # Get current background
+    local current_bg=""
+    if [[ -L "$FARV_CURRENT_LINK/backgrounds/current-background" ]]; then
+        current_bg=$(basename "$(readlink "$FARV_CURRENT_LINK/backgrounds/current-background")")
+    fi
+
+    # Get all available backgrounds (sorted)
+    local backgrounds=()
+    for bg in "$FARV_CURRENT_LINK/backgrounds"/*.{jpg,jpeg,png}; do
+        if [[ -f "$bg" ]]; then
+            local bg_name=$(basename "$bg")
+            if [[ "$bg_name" != "current-background" ]]; then
+                backgrounds+=("$bg_name")
+            fi
+        fi
+    done
+
+    if [[ ${#backgrounds[@]} -eq 0 ]]; then
+        echo "No background images found"
+        return 1
+    fi
+
+    # Sort the backgrounds array
+    IFS=$'\n' backgrounds=($(sort <<<"${backgrounds[*]}"))
+    unset IFS
+
+    # Find next background
+    local next_bg=""
+    if [[ -z "$current_bg" ]]; then
+        # No current background, use first one
+        next_bg="${backgrounds[0]}"
+    else
+        # Find current background in sorted list and get next one
+        for i in "${!backgrounds[@]}"; do
+            if [[ "${backgrounds[i]}" == "$current_bg" ]]; then
+                # Get next background (wrap around to first if at end)
+                local next_index=$(( (i + 1) % ${#backgrounds[@]} ))
+                next_bg="${backgrounds[next_index]}"
+                break
+            fi
+        done
+
+        # If current background not found, use first one
+        if [[ -z "$next_bg" ]]; then
+            next_bg="${backgrounds[0]}"
+        fi
+    fi
+
+    # Set the next background
+    if [[ -n "$next_bg" ]]; then
+        ln -sf "$next_bg" "$FARV_CURRENT_LINK/backgrounds/current-background"
+        echo "Switched to background: $next_bg"
+
+        # Run wallpaper scripts to apply the new background
+        local scripts
+        readarray -t scripts < <(find "$FARV_SYSTEM_DIR/themes" "$FARV_USER_THEMES" -name "*wallpaper*" -type f -executable 2>/dev/null)
+
+        for script in "${scripts[@]}"; do
+            if [[ -x "$script" ]]; then
+                "$script"
+            fi
+        done
+    fi
+}
+
+cycle_to_prev_background() {
+    if [[ ! -d "$FARV_CURRENT_LINK/backgrounds" ]]; then
+        echo "No backgrounds folder found for current theme"
+        return 1
+    fi
+
+    # Get current background
+    local current_bg=""
+    if [[ -L "$FARV_CURRENT_LINK/backgrounds/current-background" ]]; then
+        current_bg=$(basename "$(readlink "$FARV_CURRENT_LINK/backgrounds/current-background")")
+    fi
+
+    # Get all available backgrounds (sorted)
+    local backgrounds=()
+    for bg in "$FARV_CURRENT_LINK/backgrounds"/*.{jpg,jpeg,png}; do
+        if [[ -f "$bg" ]]; then
+            local bg_name=$(basename "$bg")
+            if [[ "$bg_name" != "current-background" ]]; then
+                backgrounds+=("$bg_name")
+            fi
+        fi
+    done
+
+    if [[ ${#backgrounds[@]} -eq 0 ]]; then
+        echo "No background images found"
+        return 1
+    fi
+
+    # Sort the backgrounds array
+    IFS=$'\n' backgrounds=($(sort <<<"${backgrounds[*]}"))
+    unset IFS
+
+    # Find previous background
+    local prev_bg=""
+    if [[ -z "$current_bg" ]]; then
+        # No current background, use last one
+        prev_bg="${backgrounds[-1]}"
+    else
+        # Find current background in sorted list and get previous one
+        for i in "${!backgrounds[@]}"; do
+            if [[ "${backgrounds[i]}" == "$current_bg" ]]; then
+                # Get previous background (wrap around to last if at beginning)
+                if [[ $i -eq 0 ]]; then
+                    prev_bg="${backgrounds[-1]}"
+                else
+                    local prev_index=$(( i - 1 ))
+                    prev_bg="${backgrounds[prev_index]}"
+                fi
+                break
+            fi
+        done
+
+        # If current background not found, use last one
+        if [[ -z "$prev_bg" ]]; then
+            prev_bg="${backgrounds[-1]}"
+        fi
+    fi
+
+    # Set the previous background
+    if [[ -n "$prev_bg" ]]; then
+        ln -sf "$prev_bg" "$FARV_CURRENT_LINK/backgrounds/current-background"
+        echo "Switched to background: $prev_bg"
+
+        # Run wallpaper scripts to apply the new background
+        local scripts
+        readarray -t scripts < <(find "$FARV_SYSTEM_DIR/themes" "$FARV_USER_THEMES" -name "*wallpaper*" -type f -executable 2>/dev/null)
+
+        for script in "${scripts[@]}"; do
+            if [[ -x "$script" ]]; then
+                "$script"
+            fi
+        done
+    fi
+}
+
+cycle_to_random_background() {
+    if [[ ! -d "$FARV_CURRENT_LINK/backgrounds" ]]; then
+        echo "No backgrounds folder found for current theme"
+        return 1
+    fi
+
+    # Get current background
+    local current_bg=""
+    if [[ -L "$FARV_CURRENT_LINK/backgrounds/current-background" ]]; then
+        current_bg=$(basename "$(readlink "$FARV_CURRENT_LINK/backgrounds/current-background")")
+    fi
+
+    # Get all available backgrounds
+    local backgrounds=()
+    for bg in "$FARV_CURRENT_LINK/backgrounds"/*.{jpg,jpeg,png}; do
+        if [[ -f "$bg" ]]; then
+            local bg_name=$(basename "$bg")
+            if [[ "$bg_name" != "current-background" ]]; then
+                backgrounds+=("$bg_name")
+            fi
+        fi
+    done
+
+    if [[ ${#backgrounds[@]} -eq 0 ]]; then
+        echo "No background images found"
+        return 1
+    fi
+
+    # If only one background, just use it
+    if [[ ${#backgrounds[@]} -eq 1 ]]; then
+        local random_bg="${backgrounds[0]}"
+    else
+        # Choose a random background (different from current if possible)
+        local random_bg=""
+        local attempts=0
+        while [[ -z "$random_bg" || ("$random_bg" == "$current_bg" && $attempts -lt 10) ]]; do
+            local random_index=$((RANDOM % ${#backgrounds[@]}))
+            random_bg="${backgrounds[random_index]}"
+            ((attempts++))
+        done
+    fi
+
+    # Set the random background
+    if [[ -n "$random_bg" ]]; then
+        ln -sf "$random_bg" "$FARV_CURRENT_LINK/backgrounds/current-background"
+        echo "Switched to background: $random_bg"
+
+        # Run wallpaper scripts to apply the new background
+        local scripts
+        readarray -t scripts < <(find "$FARV_SYSTEM_DIR/themes" "$FARV_USER_THEMES" -name "*wallpaper*" -type f -executable 2>/dev/null)
+
+        for script in "${scripts[@]}"; do
+            if [[ -x "$script" ]]; then
+                "$script"
+            fi
+        done
+    fi
 }
 
 # ----------------------------------------------------------------------------
@@ -1781,6 +2190,60 @@ case "${1:-}" in
   done
 
   show_current_theme "$verbose"
+  ;;
+"background")
+  case "${2:-}" in
+    "list"|"ls")
+      list_backgrounds
+      ;;
+    "set")
+      if [[ -z "$3" ]]; then
+        echo "Usage: farv background set <filename>"
+        echo ""
+        list_backgrounds
+        exit 1
+      fi
+      set_background "$3"
+      ;;
+    "current")
+      show_current_background
+      ;;
+    "next")
+      cycle_to_next_background
+      ;;
+    "prev"|"previous")
+      cycle_to_prev_background
+      ;;
+    "random")
+      cycle_to_random_background
+      ;;
+    "")
+      echo "Usage: farv background <command>"
+      echo ""
+      echo "Commands:"
+      echo "  list           List available backgrounds"
+      echo "  set <filename> Set current background"
+      echo "  current        Show current background"
+      echo "  next           Switch to next background"
+      echo "  prev           Switch to previous background"
+      echo "  random         Switch to random background"
+      exit 1
+      ;;
+    *)
+      echo "Error: Unknown background command '$2'"
+      echo ""
+      echo "Usage: farv background <command>"
+      echo ""
+      echo "Commands:"
+      echo "  list           List available backgrounds"
+      echo "  set <filename> Set current background"
+      echo "  current        Show current background"
+      echo "  next           Switch to next background"
+      echo "  prev           Switch to previous background"
+      echo "  random         Switch to random background"
+      exit 1
+      ;;
+  esac
   ;;
 "reload")
   reload_current_theme
