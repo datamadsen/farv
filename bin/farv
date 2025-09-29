@@ -770,6 +770,38 @@ list_current_theme_files() {
   fi
 }
 
+# Function to detect the best available editor
+detect_editor() {
+  # Check environment variables first
+  if [[ -n "$VISUAL" ]] && command -v "$VISUAL" >/dev/null 2>&1; then
+    echo "$VISUAL"
+    return 0
+  fi
+
+  if [[ -n "$EDITOR" ]] && command -v "$EDITOR" >/dev/null 2>&1; then
+    echo "$EDITOR"
+    return 0
+  fi
+
+  # Try common editors in order of preference
+  local editors=("nvim" "vim" "nano" "code" "subl" "gedit" "kate" "emacs")
+
+  for editor in "${editors[@]}"; do
+    if command -v "$editor" >/dev/null 2>&1; then
+      echo "$editor"
+      return 0
+    fi
+  done
+
+  # Fallback to vi (should be available on most systems)
+  if command -v "vi" >/dev/null 2>&1; then
+    echo "vi"
+    return 0
+  fi
+
+  return 1
+}
+
 # Function to customize a theme file
 customize_theme_file() {
   local filename="$1"
@@ -825,7 +857,22 @@ customize_theme_file() {
   local original_filename="$filename"
   apply_theme "$theme_name" "$theme_category"
   echo "Theme reapplied - $original_filename now points to your custom copy"
-  echo "Edit your custom file at: $target_path"
+
+  # Detect and open editor
+  local editor
+  if editor=$(detect_editor); then
+    echo "Opening $target_path in $editor..."
+    "$editor" "$target_path"
+    echo ""
+    echo "Changes saved. Run 'farv reload' if you need to refresh applications."
+  else
+    echo "No suitable editor found. Please manually edit: $target_path"
+    echo "After editing, run 'farv reload' to refresh applications."
+    echo ""
+    echo "You can set your preferred editor using:"
+    echo "  export EDITOR=your_editor_name"
+    echo "  export VISUAL=your_editor_name"
+  fi
 }
 
 # ----------------------------------------------------------------------------
@@ -1796,7 +1843,7 @@ USAGE:
     farv random                          Switch to random theme
     farv new <category> <name>           Create a new user theme
     farv clone <source> [name]           Clone existing local theme
-    farv customize <filename>            Copy theme file to user directory for customization
+    farv customize <filename>            Copy theme file to user directory and open editor
     farv pack [filename]                 Package current theme for sharing
     farv install <archive>               Install theme from package
     farv --help                          Show this help message
@@ -1812,7 +1859,7 @@ EXAMPLES:
     farv clone rose-pine-dawn my-rose    Clone local theme with new name
     farv clone rose-pine-dawn --category dark
                                          Clone with different category
-    farv customize btop.theme            Copy btop.theme to user directory for editing
+    farv customize btop.theme            Copy btop.theme to user directory and open editor
     farv pack                            Pack current theme as farv-theme-name-date.tar.gz
     farv pack my-theme.tar.gz            Pack with custom filename
     farv pack --output ~/themes/         Pack to specific directory
@@ -1828,10 +1875,13 @@ NEW THEME CREATION:
     as a starting point for your new theme.
 
 CUSTOMIZATION:
-    After running 'farv customize <filename>', edit the file at:
-    ~/.config/farv/themes/{category}/{theme}/{filename}
-    
-    The next time you apply the theme, your custom version will be used.
+    The 'farv customize <filename>' command will:
+    1. Copy the file to: ~/.config/farv/themes/{category}/{theme}/{filename}
+    2. Update theme symlinks to use your custom copy
+    3. Open the file in your preferred editor
+
+    After making changes, use 'farv reload' to apply them immediately.
+    Your custom version will be used automatically for this theme.
 EOF
 }
 
@@ -2260,6 +2310,10 @@ case "${1:-}" in
 "customize")
   if [ -z "$2" ]; then
     echo "Usage: farv customize <filename>"
+    echo ""
+    echo "This command will copy the file to your user theme directory and open it in your editor."
+    echo "Files are stored at: ~/.config/farv/themes/{category}/{theme}/{filename}"
+    echo "After editing, use 'farv reload' to apply changes."
     echo ""
     list_current_theme_files
     exit 1
