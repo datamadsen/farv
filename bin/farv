@@ -315,7 +315,7 @@ show_commands() {
   echo "  use [theme]         Use a theme (interactive if fzf available)"
   echo "  list                List available themes"
   echo "  current             Show current active theme"
-  echo "  background          Manage theme backgrounds"
+  echo "  background|bg       Manage theme backgrounds"
   echo "  reload              Reload current active theme"
   echo "  next                Cycle to next theme"
   echo "  prev                Cycle to previous theme"
@@ -1441,6 +1441,7 @@ _farv_commands_only() {
         'list:List all available themes'
         'current:Show current active theme'
         'background:Manage theme backgrounds'
+        'bg:Manage theme backgrounds (alias for background)'
         'reload:Reload current active theme'
         'next:Cycle to next theme'
         'prev:Cycle to previous theme'
@@ -1541,7 +1542,7 @@ _farv_second_arg() {
             )
             _describe 'current options' current_flags
             ;;
-        background)
+        background|bg)
             # Complete background subcommands
             local -a background_commands
             background_commands=(
@@ -1563,8 +1564,8 @@ _farv_third_arg() {
         return 0
     fi
 
-    if [[ $words[2] == "background" && $words[3] == "set" ]]; then
-        # Complete background filenames for "farv background set"
+    if [[ ($words[2] == "background" || $words[2] == "bg") && $words[3] == "set" ]]; then
+        # Complete background filenames for "farv background set" or "farv bg set"
         local -a background_files
         if [[ -d "${XDG_CONFIG_HOME:-$HOME/.config}/farv/current/backgrounds" ]]; then
             for file in "${XDG_CONFIG_HOME:-$HOME/.config}/farv/current/backgrounds"/*.{jpg,jpeg,png}; do
@@ -1619,14 +1620,14 @@ _farv() {
     fi
 
     # Handle background subcommand
-    if [[ ${prev} == "background" ]]; then
+    if [[ ${prev} == "background" || ${prev} == "bg" ]]; then
         local subcommands="list current set next prev random"
         COMPREPLY=( $(compgen -W "${subcommands}" -- ${cur}) )
         return 0
     fi
 
     # Handle background set subcommand
-    if [[ ${COMP_WORDS[COMP_CWORD-2]} == "background" && ${prev} == "set" ]]; then
+    if [[ (${COMP_WORDS[COMP_CWORD-2]} == "background" || ${COMP_WORDS[COMP_CWORD-2]} == "bg") && ${prev} == "set" ]]; then
         local background_files=""
         if [ -d "${XDG_CONFIG_HOME:-$HOME/.config}/farv/current/backgrounds" ]; then
             background_files=$(ls "${XDG_CONFIG_HOME:-$HOME/.config}/farv/current/backgrounds"/*.{jpg,jpeg,png} 2>/dev/null | grep -v "current-background" | xargs -n1 basename | tr '\n' ' ')
@@ -1674,7 +1675,7 @@ _farv() {
     
     # First argument - show commands only
     if [[ ${COMP_CWORD} == 1 ]]; then
-        local commands="use list current background reload next prev random customize new clone pack install"
+        local commands="use list current background bg reload next prev random customize new clone pack install"
         COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
         return 0
     fi
@@ -1755,6 +1756,7 @@ complete -c farv -f -n '__fish_is_first_token' -a 'use' -d 'Use a theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'list' -d 'List available themes'
 complete -c farv -f -n '__fish_is_first_token' -a 'current' -d 'Show current active theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'background' -d 'Manage theme backgrounds'
+complete -c farv -f -n '__fish_is_first_token' -a 'bg' -d 'Manage theme backgrounds (alias)'
 complete -c farv -f -n '__fish_is_first_token' -a 'reload' -d 'Reload current active theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'next' -d 'Cycle to next theme'
 complete -c farv -f -n '__fish_is_first_token' -a 'prev' -d 'Cycle to previous theme'
@@ -1797,12 +1799,12 @@ complete -c farv -f -n '__fish_seen_subcommand_from current' -s v -d 'Show verbo
 complete -c farv -f -n '__fish_seen_subcommand_from current' -l verbose -d 'Show verbose descriptions'
 
 # Complete background subcommands
-complete -c farv -f -n '__fish_seen_subcommand_from background' -a 'list' -d 'List available backgrounds'
-complete -c farv -f -n '__fish_seen_subcommand_from background' -a 'current' -d 'Show current background'
-complete -c farv -f -n '__fish_seen_subcommand_from background' -a 'set' -d 'Set current background'
-complete -c farv -f -n '__fish_seen_subcommand_from background' -a 'next' -d 'Switch to next background'
-complete -c farv -f -n '__fish_seen_subcommand_from background' -a 'prev' -d 'Switch to previous background'
-complete -c farv -f -n '__fish_seen_subcommand_from background' -a 'random' -d 'Switch to random background'
+complete -c farv -f -n '__fish_seen_subcommand_from background bg' -a 'list' -d 'List available backgrounds'
+complete -c farv -f -n '__fish_seen_subcommand_from background bg' -a 'current' -d 'Show current background'
+complete -c farv -f -n '__fish_seen_subcommand_from background bg' -a 'set' -d 'Set current background'
+complete -c farv -f -n '__fish_seen_subcommand_from background bg' -a 'next' -d 'Switch to next background'
+complete -c farv -f -n '__fish_seen_subcommand_from background bg' -a 'prev' -d 'Switch to previous background'
+complete -c farv -f -n '__fish_seen_subcommand_from background bg' -a 'random' -d 'Switch to random background'
 
 # Complete background filenames for 'set' subcommand
 function __farv_complete_background_files
@@ -1815,7 +1817,7 @@ function __farv_complete_background_files
     end
 end
 
-complete -c farv -f -n '__fish_seen_subcommand_from background; and __fish_seen_subcommand_from set' -a '(__farv_complete_background_files)' -d 'Background files'
+complete -c farv -f -n '__fish_seen_subcommand_from background bg; and __fish_seen_subcommand_from set' -a '(__farv_complete_background_files)' -d 'Background files'
 
 # Standard options
 complete -c farv -s l -l list -d 'List available themes'
@@ -1837,6 +1839,7 @@ USAGE:
     farv use                             Interactive theme selection (requires fzf)
     farv list [-v|--verbose]             List all available themes
     farv current [-v|--verbose]          Show current active theme
+    farv background|bg <command>         Manage theme backgrounds
     farv reload                          Reload current active theme
     farv next                            Cycle to next theme
     farv prev                            Cycle to previous theme
@@ -1853,6 +1856,11 @@ EXAMPLES:
     farv list                            Show all available themes
     farv use                             Open interactive theme selector
     farv use rose-pine-dawn              Use rose-pine-dawn theme
+    farv background list                 List available backgrounds for current theme
+    farv background set wallpaper.jpg    Set specific background
+    farv background next                 Switch to next background
+    farv background prev                 Switch to previous background
+    farv background random               Switch to random background
     farv new dark my-theme               Create new dark theme
     farv new light my-theme              Create new light theme
     farv clone rose-pine-dawn            Clone system theme to user space
@@ -1882,6 +1890,20 @@ CUSTOMIZATION:
 
     After making changes, use 'farv reload' to apply them immediately.
     Your custom version will be used automatically for this theme.
+
+BACKGROUND MANAGEMENT:
+    Themes can include multiple background images in a 'backgrounds' folder.
+    Use the 'farv background' command to manage them:
+
+    farv background list      - Show all available backgrounds
+    farv background current   - Show current background selection
+    farv background set <file> - Set a specific background
+    farv background next      - Cycle to next background
+    farv background prev      - Cycle to previous background
+    farv background random    - Switch to a random background
+
+    To add backgrounds to a theme, place images in:
+    ~/.config/farv/themes/{category}/{theme}/backgrounds/
 EOF
 }
 
@@ -2241,7 +2263,7 @@ case "${1:-}" in
 
   show_current_theme "$verbose"
   ;;
-"background")
+"background"|"bg")
   case "${2:-}" in
     "list"|"ls")
       list_backgrounds
