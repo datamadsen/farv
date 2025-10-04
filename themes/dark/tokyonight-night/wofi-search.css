@@ -12,7 +12,6 @@ window {
   margin: 0px;
   padding: 20px;
   background-color: @base;
-  opacity: 0.95;
 }
 
 #inner-box {
