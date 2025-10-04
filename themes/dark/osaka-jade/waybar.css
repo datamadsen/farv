@@ -1,0 +1,12 @@
+/*
+ * Osaka Jade Theme
+ * Source: https://github.com/basecamp/omarchy
+ */
+
+@define-color foreground #e6d8ba;
+@define-color background #11221C;
+
+* {
+  color: @foreground;
+  background-color: @background;
+}
