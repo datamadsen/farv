@@ -1,0 +1,1 @@
+zstyle ':fzf-tab:*' fzf-flags --color=bg+:#2d4f67,bg:#1f1f28,border:#957fb8,spinner:#7fb4ca,hl:#7e9cd8,fg:#dcd7ba,header:#76946a,info:#c0a36e,pointer:#e82424,marker:#98bb6c,fg+:#dcd7ba,prompt:#957fb8,hl+:#7fb4ca
