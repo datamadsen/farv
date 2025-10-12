@@ -3,6 +3,9 @@
  * Source: https://www.nordtheme.com
  */
 
+@define-color base #2e3440;
+@define-color text #d8dee9;
+
 /* Polar Night - Dark backgrounds */
 @define-color nord0  #2e3440;
 @define-color nord1  #3b4252;
@@ -26,8 +29,3 @@
 @define-color nord13 #ebcb8b;
 @define-color nord14 #a3be8c;
 @define-color nord15 #b48ead;
-
-* {
-  color: @nord4;
-  background-color: @nord0;
-}

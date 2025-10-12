@@ -4,12 +4,13 @@
 */
 
 @define-color base            #faf4ed;
+@define-color text            #575279;
+
 @define-color surface         #fffaf3;
 @define-color overlay         #f2e9e1;
 
 @define-color muted           #9893a5;
 @define-color subtle          #797593;
-@define-color text            #575279;
 
 @define-color love            #b4637a;
 @define-color gold            #ea9d34;
@@ -21,10 +22,3 @@
 @define-color highlightLow    #f4ede8;
 @define-color highlightMed    #dfdad9;
 @define-color highlightHigh   #cecacd;
-
-* {
-  color: @rose;
-  background-color: @base;
-}
-
-
