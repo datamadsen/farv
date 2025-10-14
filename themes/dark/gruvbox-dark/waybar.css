@@ -1,3 +1,8 @@
 /* Gruvbox theme colors for waybar */
+
+/* Common core colors */
 @define-color base #282828;
 @define-color text #ebdbb2;
+@define-color surface #3c3836;
+@define-color muted #928374;
+@define-color border #d79921;

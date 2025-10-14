@@ -1,3 +1,8 @@
 /* Dracula theme colors for waybar */
+
+/* Common core colors */
 @define-color base #282a36;
 @define-color text #f8f8f2;
+@define-color surface #44475a;
+@define-color muted #6272a4;
+@define-color border #bd93f9;

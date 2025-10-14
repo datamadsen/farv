@@ -1,3 +1,8 @@
 /* Catppuccin Mocha theme colors for waybar */
+
+/* Common core colors */
 @define-color base #1e1e2e;
 @define-color text #cdd6f4;
+@define-color surface #313244;
+@define-color muted #6c7086;
+@define-color border #89b4fa;

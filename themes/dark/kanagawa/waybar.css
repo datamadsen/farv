@@ -1,3 +1,8 @@
 /* Kanagawa theme colors for waybar */
+
+/* Common core colors */
 @define-color base #1f1f28;
 @define-color text #dcd7ba;
+@define-color surface #2a2a37;
+@define-color muted #727169;
+@define-color border #957fb8;

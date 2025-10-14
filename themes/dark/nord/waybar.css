@@ -3,8 +3,12 @@
  * Source: https://www.nordtheme.com
  */
 
+/* Common core colors */
 @define-color base #2e3440;
 @define-color text #d8dee9;
+@define-color surface #3b4252;
+@define-color muted #4c566a;
+@define-color border #5e81ac;
 
 /* Polar Night - Dark backgrounds */
 @define-color nord0  #2e3440;

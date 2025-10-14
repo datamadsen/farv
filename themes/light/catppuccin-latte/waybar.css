@@ -3,10 +3,14 @@
  * Source: https://github.com/catppuccin/catppuccin
  */
 
+/* Common core colors */
 @define-color base #eff1f5;
 @define-color text #4c4f69;
+@define-color surface #ccd0da;
+@define-color muted #6c6f85;
+@define-color border #dce0e8;
 
+/* Legacy aliases */
 @define-color foreground #4c4f69; /* text */
 @define-color background #eff1f5; /* base */
-@define-color border     #dce0e8; /* crust */
 @define-color accent     #1e66f5; /* blue */
