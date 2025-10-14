@@ -3,8 +3,13 @@
  * Source: https://github.com/basecamp/omarchy
  */
 
+/* Common core colors */
 @define-color base #11221C;
 @define-color text #e6d8ba;
+@define-color surface #1a2f27;
+@define-color muted #9ba68a;
+@define-color border #71CEAD;
 
+/* Legacy aliases */
 @define-color foreground #e6d8ba;
 @define-color background #11221C;
