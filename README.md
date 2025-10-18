@@ -7,6 +7,15 @@ between complete desktop themes using a powerful hierarchy concept.
 
 The word "farv" is Danish and means "color" as in an imperative verb - aka. a command.
 
+## Table of Contents
+
+- [The Layer Concept](#the-layer-concept)
+- [Quick Start](#quick-start)
+- [Application Setup](#application-setup)
+- [Advanced Features](#advanced-features)
+- [Installation](#installation)
+- [Contributing](#contributing)
+
 ## The Layer Concept
 
 Think of farv themes like transparent sheets stacked on top of each other.
@@ -35,9 +44,9 @@ that file.
 ### Why This Matters
 
 **Override specific files**: Want to use `tokyonight-night` but with your
-own wallpaper? Just put `wallpaper.png` in your user theme directory.
-farv will use your wallpaper but inherit everything else from the system
-theme.
+own backgrounds? Just add background images to
+`~/.config/farv/themes/dark/tokyonight-night/backgrounds/` and farv will
+make them available alongside the system theme's backgrounds.
 
 **Share common settings**: Put files that work across multiple themes
 in category-level directories. All your dark themes can share the same
@@ -56,11 +65,14 @@ Let's say you want to customize the popular `rose-pine-dawn` theme:
 ├── alacritty.toml
 ├── waybar.css
 ├── hyprland.conf
-└── wallpaper.png
+└── backgrounds/
+    ├── wallpaper1.png
+    └── wallpaper2.png
 
 # You add personal touches
 ~/.config/farv/themes/light/rose-pine-dawn/
-├── wallpaper.png          # Your custom wallpaper
+├── backgrounds/
+│   └── my-custom.png      # Your custom background
 └── tmux.conf              # Your tmux config
 
 # You share settings across all light themes
@@ -70,7 +82,7 @@ Let's say you want to customize the popular `rose-pine-dawn` theme:
 
 When you run `farv use rose-pine-dawn`, you get:
 
-- Your custom wallpaper (layer 1)
+- All backgrounds from both system and user directories (layers 1 & 2)
 - Your tmux config (layer 1)
 - System's alacritty, waybar, hyprland configs (layer 2)
 - Your light GTK script (layer 3)
@@ -110,6 +122,224 @@ farv prev      # Previous theme
 farv random    # Random theme
 ```
 
+## Application Setup
+
+Farv uses three integration methods to connect your applications with themes. The philosophy is simple: **your personal configuration stays in your config files, theme settings come from farv**.
+
+### Directory Structure
+
+```
+~/.config/farv/
+├── current/              # Symlinks to active theme files (managed by farv)
+│   ├── alacritty.toml -> /usr/share/farv/themes/dark/tokyonight-night/alacritty.toml
+│   ├── neovim.lua -> /usr/share/farv/themes/dark/tokyonight-night/neovim.lua
+│   ├── tmux.conf -> /usr/share/farv/themes/dark/tokyonight-night/tmux.conf
+│   ├── yazi-theme.toml -> /usr/share/farv/themes/dark/tokyonight-night/yazi-theme.toml
+│   └── ... (other theme files)
+└── config                # Farv configuration
+
+/usr/share/farv/themes/   # Theme files (or ~/source/farv/themes during development)
+├── dark/
+│   ├── gruvbox-dark/
+│   ├── tokyonight-night/
+│   └── ...
+└── light/
+    ├── gruvbox-light/
+    └── ...
+```
+
+### Integration Methods
+
+#### Method 1: Import/Source (Recommended)
+
+Your config file imports or sources the farv-managed theme file. This keeps your settings separate from theme settings.
+
+##### Alacritty
+
+Add to `~/.config/alacritty/alacritty.toml`:
+
+```toml
+[env]
+TERM = "xterm-256color"
+
+[window]
+padding.x = 14
+padding.y = 14
+opacity = 0.98
+
+[font]
+normal = { family = "CaskaydiaMono Nerd Font", style = "Regular" }
+size = 11
+
+# Import farv theme (colors only)
+[general]
+import = ["~/.config/farv/current/alacritty.toml"]
+```
+
+##### Tmux
+
+Add to `~/.tmux.conf`:
+
+```bash
+# Your settings
+set -g default-terminal "tmux-256color"
+set -g mouse on
+set -g base-index 1
+
+# Import farv theme (colors and status bar)
+source-file ~/.config/farv/current/tmux.conf
+```
+
+##### Waybar
+
+Add to `~/.config/waybar/style.css`:
+
+```css
+@import "../../.config/farv/current/waybar.css";
+
+* {
+  border: none;
+  font-family: CaskaydiaMono Nerd Font Propo;
+  font-size: 16px;
+  background-color: @base;
+  color: @text;
+}
+
+/* Your custom styling here */
+```
+
+##### Hyprland
+
+Add near the end of `~/.config/hypr/hyprland.conf`:
+
+```bash
+# Your keybindings, rules, animations, etc.
+bind = SUPER, Return, exec, alacritty
+bind = SUPER, Q, killactive
+
+# Use farv theme for wofi launcher
+bind = SUPER, space, exec, pkill wofi || wofi --show drun --style="$HOME/.config/farv/current/wofi-search.css"
+
+# THEME OVERRIDES (farv)
+# The farv theme system may override colors defined above
+source = ~/.config/farv/current/hyprland.conf
+```
+
+##### Neovim
+
+With lazy.nvim - Create symlink in plugins directory:
+
+```bash
+cd ~/dotfiles/nvim/lua/plugins/  # or ~/.config/nvim/lua/plugins/
+ln -sf ~/.config/farv/current/neovim.lua farv-theme.lua
+```
+
+The farv `neovim.lua` file is a complete lazy.nvim plugin specification that returns the theme configuration:
+
+```lua
+-- Example: themes/dark/tokyonight-night/neovim.lua
+return {
+    "folke/tokyonight.nvim",
+    opts = {
+        style = "night",
+        dim_inactive = true,
+    },
+    config = function()
+        vim.cmd("set background=dark")
+        vim.cmd("colorscheme tokyonight-night")
+    end,
+}
+```
+
+##### Yazi
+
+Create symlink for theme file:
+
+```bash
+ln -sf ~/.config/farv/current/yazi-theme.toml ~/.config/yazi/theme.toml
+```
+
+Your `~/.config/yazi/yazi.toml` stays separate with your preferences:
+
+```toml
+# Your Yazi configuration
+[manager]
+show_hidden = false
+
+[preview]
+max_width = 8096
+max_height = 8096
+```
+
+#### Method 2: Script-Modified Configuration
+
+For applications where you want farv to update just the theme setting while preserving all your other configuration.
+
+##### Bat
+
+Automatic configuration management:
+
+Your `~/.config/bat/config`:
+
+```bash
+# Your settings - farv won't touch these
+--style="numbers,changes,header"
+--paging=auto
+
+# This line is automatically managed by farv
+--theme="gruvbox-dark"
+```
+
+When you switch themes, farv's `bat.sh` script automatically updates only the `--theme=` line. Your other settings remain unchanged.
+
+#### Method 3: Executable Scripts
+
+Scripts that run commands to apply themes to running applications or system settings.
+
+##### GTK
+
+Themes are applied via `gtk.sh` script:
+
+```bash
+# themes/dark/gtk.sh
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
+```
+
+##### Claude Code
+
+Theme applied via `claude-code.sh`:
+
+```bash
+# themes/dark/claude-code.sh
+if command -v claude &>/dev/null; then
+  claude config set -g theme dark
+fi
+```
+
+### How Theme Switching Works
+
+When you run `farv use tokyonight-night`:
+
+1. **Symlinks Updated**: farv updates all symlinks in `~/.config/farv/current/` to point to the new theme's files
+2. **Scripts Execute**: Any executable `.sh` scripts in the theme directory are executed (must have execute permission: `chmod +x script.sh`)
+3. **Applications Reload**: Applications that import/source farv files pick up changes on next launch or manual reload
+
+### Supported Applications
+
+| Application | Method | Farv Manages | You Manage |
+|------------|--------|--------------|------------|
+| Alacritty | Import | Colors | Font, padding, keybindings |
+| Tmux | Source | Colors, status bar | Keybindings, plugins, behavior |
+| Neovim | Symlink | Colorscheme plugin | All other plugins, settings |
+| Yazi | Symlink | Theme/colors | File manager settings |
+| Waybar | Import | Color variables | Layout, sizing, components |
+| Hyprland | Source | Color overrides | Rules, keybindings, animations |
+| Bat | Script | Theme name | Style, paging, other options |
+| Wofi | Command arg | Styles | Menu behavior |
+| GTK | Script | System theme | - |
+| Claude Code | Script | Theme setting | - |
+
 ## Advanced Features
 
 ### Theme Management
@@ -139,27 +369,77 @@ farv customize ghostty  # Copy the ghostty file to your override directory
 farv reload # Reapply current theme
 ```
 
-### Scripts
+### Wallpapers and Backgrounds
 
-Often it will not be enough to just have a file in the theme folder. For
-instance, just having a wallpaper.png will not make it so that it will
-automatically be set by magic. That magic needs to be implemented in scripts.
-Farv comes with a few predefined scripts, and one of those are to set the
-wallpaper with `swaybg`. If you use something else, you should create an
-executable script in one of your layer folders:
+Farv has special support for managing multiple backgrounds per theme. Each theme can have a `backgrounds/` directory containing wallpaper images.
 
-- `~/.config/farv/themes`
-- `~/.config/farv/themes/dark`
-- `~/.config/farv/themes/light`
-- `~/.config/farv/themes/dark/{your-theme}`
-- `~/.config/farv/themes/light/{your-theme}`
+#### How Backgrounds Work
 
-For something like wallpaper, that will probably be the same for every theme, it
-should be put in `~/.config/farv/themes` and then it will be run every time a
-new theme is applied. Check `/usr/share/farv/themes/swaybg-wallpaper.sh` for
-inspiration.
+When you switch themes, farv creates symlinks in `~/.config/farv/current/backgrounds/` for all background files from the active theme. It also creates a special `current-background` symlink that points to the selected wallpaper.
 
-For something like setting the system appearance to either light or dark mode,
+```bash
+~/.config/farv/current/backgrounds/
+├── wallpaper1.png -> /usr/share/farv/themes/dark/tokyonight-night/backgrounds/wallpaper1.png
+├── wallpaper2.png -> /usr/share/farv/themes/dark/tokyonight-night/backgrounds/wallpaper2.png
+├── my-custom.png -> ~/.config/farv/themes/dark/tokyonight-night/backgrounds/my-custom.png
+└── current-background -> wallpaper1.png  # Points to selected background
+```
+
+#### Managing Backgrounds
+
+```bash
+# List available backgrounds for current theme
+farv background list
+
+# Select a specific background
+farv background use wallpaper2.png
+
+# Select a random background
+farv background random
+```
+
+#### Setting Up Wallpaper Display
+
+For swaybg users, add this to your Hyprland config:
+
+```bash
+# In ~/.config/hypr/hyprland.conf
+exec-once = swaybg -i ~/.config/farv/current/backgrounds/current-background -m fill
+exec-once = farv background random
+```
+
+The included `swaybg-wallpaper.sh` script will automatically reload swaybg when you switch themes or change backgrounds.
+
+If you use a different wallpaper manager (like `feh`, `nitrogen`, or `hyprpaper`), you can create a custom script in one of your layer folders:
+
+- `~/.config/farv/themes/my-wallpaper.sh` (runs for all themes)
+- `~/.config/farv/themes/dark/my-wallpaper.sh` (runs for dark themes)
+- `~/.config/farv/themes/light/my-wallpaper.sh` (runs for light themes)
+
+Example script for hyprpaper:
+
+```bash
+#!/bin/bash
+# ~/.config/farv/themes/my-wallpaper.sh
+
+WALLPAPER="$HOME/.config/farv/current/backgrounds/current-background"
+
+if [ -f "$WALLPAPER" ]; then
+  hyprctl hyprpaper preload "$WALLPAPER"
+  hyprctl hyprpaper wallpaper ",$WALLPAPER"
+fi
+```
+
+Remember to make your script executable:
+
+```bash
+chmod +x ~/.config/farv/themes/my-wallpaper.sh
+```
+
+### Writing Scripts
+
+Scripts can be placed at different layers depending on their scope. For
+something like setting the system appearance to either light or dark mode,
 it should be in either:
 
 - `~/.config/farv/themes/dark`, or
@@ -179,37 +459,52 @@ Remember to make your scripts executable for them to run:
 chmod +x ~/.config/farv/themes/dark/my-theme/gtk.sh
 ```
 
+#### Example: Bat Theme Script
+
+Here's an example of a script that modifies an existing config file:
+
+```bash
+#!/bin/bash
+# bat.sh - Updates bat theme in user's config
+
+if ! command -v bat &>/dev/null; then
+  exit 0
+fi
+
+BAT_CONFIG="$HOME/.config/bat/config"
+mkdir -p "$(dirname "$BAT_CONFIG")"
+
+if [ ! -f "$BAT_CONFIG" ]; then
+  touch "$BAT_CONFIG"
+fi
+
+# Update or add theme line
+if grep -q "^--theme=" "$BAT_CONFIG"; then
+  sed -i 's/^--theme=.*$/--theme="gruvbox-dark"/' "$BAT_CONFIG"
+else
+  echo '--theme="gruvbox-dark"' >> "$BAT_CONFIG"
+fi
+```
+
 At the time of writing this, the included scripts to change wallpaper, reload
 tmux configuration etc. is pretty sparse and specific to the tools I use at the
 moment. If you write scripts that you think can benefit more than just you,
 please consider sharing it in an issue and/or pull request.
 
-## Application Setup
+### Adding New Application Support
 
-Configure your applications to read from `~/.config/farv/current/`:
+To add support for a new application:
 
-**Alacritty** (`~/.config/alacritty/alacritty.toml`):
+1. **Create theme files**: Add config file in each theme directory (e.g., `my-app.conf`)
 
-```toml
-import = ["~/.config/farv/current/alacritty.toml"]
-```
+2. **Choose integration method**:
+   - **Preferred**: Import/source method - keeps user config separate
+   - **Alternative**: Script-modified - when you need to update specific lines
+   - **Last resort**: Executable script - for runtime commands
 
-**tmux** (`~/.config/tmux/tmux.conf`):
+3. **Test**: Switch themes and verify the application updates correctly
 
-```bash
-source-file ~/.config/farv/current/tmux.conf
-```
-
-**neovim** (`~/.config/nvim/`)
-Create a symlink from your plugins directory to the relevant farv file.
-
-```bash
-ln -s ~/.config/farv/current/neovim.lua/ ~/.config/nvim/lua/plugins/farv.lua
-```
-
-**wofi** (`~/.config/wofi`)
-Wofi is started with a reference to a stylesheet. Just reference the stylesheet
-in the farv theme.
+**Best Practice**: Use the import/source method whenever possible. It provides the cleanest separation between user settings and theme settings.
 
 ## Installation
 
