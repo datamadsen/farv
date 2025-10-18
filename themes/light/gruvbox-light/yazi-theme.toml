@@ -1,0 +1,112 @@
+# Gruvbox Light theme for Yazi
+# Based on: https://github.com/morhetz/gruvbox
+
+[flavor]
+use = ""
+
+[manager]
+cwd = { fg = "#076678" }
+
+# Hovered
+hovered         = { fg = "#fbf1c7", bg = "#b57614" }
+preview_hovered = { underline = true }
+
+# Find
+find_keyword  = { fg = "#b57614", italic = true }
+find_position = { fg = "#8f3f71", bg = "reset", italic = true }
+
+# Marker
+marker_selected = { fg = "#79740e", bg = "#79740e" }
+marker_copied   = { fg = "#b57614", bg = "#b57614" }
+marker_cut      = { fg = "#9d0006", bg = "#9d0006" }
+
+# Tab
+tab_active   = { fg = "#fbf1c7", bg = "#3c3836" }
+tab_inactive = { fg = "#3c3836", bg = "#d5c4a1" }
+tab_width    = 1
+
+# Border
+border_symbol = "│"
+border_style  = { fg = "#bdae93" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#d5c4a1", bg = "#d5c4a1" }
+
+# Mode
+mode_normal = { fg = "#fbf1c7", bg = "#076678", bold = true }
+mode_select = { fg = "#fbf1c7", bg = "#79740e", bold = true }
+mode_unset  = { fg = "#fbf1c7", bg = "#9d0006", bold = true }
+
+# Progress
+progress_label  = { fg = "#3c3836", bold = true }
+progress_normal = { fg = "#076678", bg = "#d5c4a1" }
+progress_error  = { fg = "#9d0006", bg = "#d5c4a1" }
+
+# Permissions
+permissions_t = { fg = "#79740e" }
+permissions_r = { fg = "#b57614" }
+permissions_w = { fg = "#9d0006" }
+permissions_x = { fg = "#427b58" }
+permissions_s = { fg = "#7c6f64" }
+
+[input]
+border   = { fg = "#076678" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#076678" }
+active   = { fg = "#8f3f71" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#076678" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#d5c4a1" }
+cand            = { fg = "#427b58" }
+rest            = { fg = "#7c6f64" }
+desc            = { fg = "#8f3f71" }
+separator       = "  "
+separator_style = { fg = "#bdae93" }
+
+[help]
+on      = { fg = "#8f3f71" }
+exec    = { fg = "#427b58" }
+desc    = { fg = "#7c6f64" }
+hovered = { bg = "#bdae93", bold = true }
+footer  = { fg = "#d5c4a1", bg = "#3c3836" }
+
+[filetype]
+rules = [
+	# Images
+	{ mime = "image/*", fg = "#af3a03" },
+
+	# Videos
+	{ mime = "video/*", fg = "#b57614" },
+	{ mime = "audio/*", fg = "#b57614" },
+
+	# Archives
+	{ mime = "application/zip",             fg = "#af3a03" },
+	{ mime = "application/gzip",            fg = "#af3a03" },
+	{ mime = "application/x-tar",           fg = "#af3a03" },
+	{ mime = "application/x-bzip",          fg = "#af3a03" },
+	{ mime = "application/x-bzip2",         fg = "#af3a03" },
+	{ mime = "application/x-7z-compressed", fg = "#af3a03" },
+	{ mime = "application/x-rar",           fg = "#af3a03" },
+
+	# Documents
+	{ mime = "application/pdf", fg = "#9d0006" },
+
+	# Fallback
+	{ name = "*", fg = "#3c3836" },
+	{ name = "*/", fg = "#076678" }
+]
