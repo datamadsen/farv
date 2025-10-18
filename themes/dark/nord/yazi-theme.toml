@@ -4,7 +4,7 @@
 [flavor]
 use = ""
 
-[manager]
+[mgr]
 cwd = { fg = "#81a1c1" }
 
 # Hovered
