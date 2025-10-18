@@ -1,0 +1,93 @@
+# Nord theme for Yazi
+# Based on: https://www.nordtheme.com
+
+[flavor]
+use = ""
+
+[manager]
+cwd = { fg = "#81a1c1" }
+
+# Hovered
+hovered         = { fg = "#2e3440", bg = "#ebcb8b" }
+preview_hovered = { underline = true }
+
+# Find
+find_keyword  = { fg = "#ebcb8b", italic = true }
+find_position = { fg = "#b48ead", bg = "reset", italic = true }
+
+# Marker
+marker_selected = { fg = "#a3be8c", bg = "#a3be8c" }
+marker_copied   = { fg = "#ebcb8b", bg = "#ebcb8b" }
+marker_cut      = { fg = "#bf616a", bg = "#bf616a" }
+
+# Tab
+tab_active   = { fg = "#2e3440", bg = "#d8dee9" }
+tab_inactive = { fg = "#d8dee9", bg = "#3b4252" }
+tab_width    = 1
+
+# Border
+border_symbol = "│"
+border_style  = { fg = "#4c566a" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#3b4252", bg = "#3b4252" }
+
+# Mode
+mode_normal = { fg = "#2e3440", bg = "#81a1c1", bold = true }
+mode_select = { fg = "#2e3440", bg = "#a3be8c", bold = true }
+mode_unset  = { fg = "#2e3440", bg = "#bf616a", bold = true }
+
+# Progress
+progress_label  = { fg = "#d8dee9", bold = true }
+progress_normal = { fg = "#81a1c1", bg = "#3b4252" }
+progress_error  = { fg = "#bf616a", bg = "#3b4252" }
+
+# Permissions
+permissions_t = { fg = "#a3be8c" }
+permissions_r = { fg = "#ebcb8b" }
+permissions_w = { fg = "#bf616a" }
+permissions_x = { fg = "#88c0d0" }
+permissions_s = { fg = "#4c566a" }
+
+[input]
+border   = { fg = "#81a1c1" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#81a1c1" }
+active   = { fg = "#b48ead" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#81a1c1" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#3b4252" }
+cand            = { fg = "#88c0d0" }
+rest            = { fg = "#4c566a" }
+desc            = { fg = "#b48ead" }
+separator       = "  "
+separator_style = { fg = "#4c566a" }
+
+[help]
+on      = { fg = "#b48ead" }
+exec    = { fg = "#88c0d0" }
+desc    = { fg = "#4c566a" }
+hovered = { bg = "#4c566a", bold = true }
+footer  = { fg = "#3b4252", bg = "#d8dee9" }
+
+[filetype]
+rules = [
+	# Fallback
+	{ name = "*", fg = "#d8dee9" },
+	{ name = "*/", fg = "#81a1c1" }
+]

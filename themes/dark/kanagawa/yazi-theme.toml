@@ -1,0 +1,93 @@
+# Kanagawa theme for Yazi
+# Based on: https://github.com/rebelot/kanagawa.nvim
+
+[flavor]
+use = ""
+
+[manager]
+cwd = { fg = "#7e9cd8" }
+
+# Hovered
+hovered         = { fg = "#1f1f28", bg = "#c0a36e" }
+preview_hovered = { underline = true }
+
+# Find
+find_keyword  = { fg = "#c0a36e", italic = true }
+find_position = { fg = "#957fb8", bg = "reset", italic = true }
+
+# Marker
+marker_selected = { fg = "#76946a", bg = "#76946a" }
+marker_copied   = { fg = "#c0a36e", bg = "#c0a36e" }
+marker_cut      = { fg = "#c34043", bg = "#c34043" }
+
+# Tab
+tab_active   = { fg = "#1f1f28", bg = "#dcd7ba" }
+tab_inactive = { fg = "#dcd7ba", bg = "#16161d" }
+tab_width    = 1
+
+# Border
+border_symbol = "│"
+border_style  = { fg = "#727169" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#16161d", bg = "#16161d" }
+
+# Mode
+mode_normal = { fg = "#1f1f28", bg = "#7e9cd8", bold = true }
+mode_select = { fg = "#1f1f28", bg = "#76946a", bold = true }
+mode_unset  = { fg = "#1f1f28", bg = "#c34043", bold = true }
+
+# Progress
+progress_label  = { fg = "#dcd7ba", bold = true }
+progress_normal = { fg = "#7e9cd8", bg = "#16161d" }
+progress_error  = { fg = "#c34043", bg = "#16161d" }
+
+# Permissions
+permissions_t = { fg = "#76946a" }
+permissions_r = { fg = "#c0a36e" }
+permissions_w = { fg = "#c34043" }
+permissions_x = { fg = "#6a9589" }
+permissions_s = { fg = "#727169" }
+
+[input]
+border   = { fg = "#7e9cd8" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#7e9cd8" }
+active   = { fg = "#957fb8" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#7e9cd8" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#16161d" }
+cand            = { fg = "#6a9589" }
+rest            = { fg = "#727169" }
+desc            = { fg = "#957fb8" }
+separator       = "  "
+separator_style = { fg = "#727169" }
+
+[help]
+on      = { fg = "#957fb8" }
+exec    = { fg = "#6a9589" }
+desc    = { fg = "#727169" }
+hovered = { bg = "#727169", bold = true }
+footer  = { fg = "#16161d", bg = "#dcd7ba" }
+
+[filetype]
+rules = [
+	# Fallback
+	{ name = "*", fg = "#dcd7ba" },
+	{ name = "*/", fg = "#7e9cd8" }
+]

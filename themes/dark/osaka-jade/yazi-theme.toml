@@ -1,0 +1,93 @@
+# Osaka Jade theme for Yazi
+# Based on: https://github.com/basecamp/omarchy
+
+[flavor]
+use = ""
+
+[manager]
+cwd = { fg = "#509475" }
+
+# Hovered
+hovered         = { fg = "#111c18", bg = "#E5C736" }
+preview_hovered = { underline = true }
+
+# Find
+find_keyword  = { fg = "#E5C736", italic = true }
+find_position = { fg = "#D2689C", bg = "reset", italic = true }
+
+# Marker
+marker_selected = { fg = "#549e6a", bg = "#549e6a" }
+marker_copied   = { fg = "#E5C736", bg = "#E5C736" }
+marker_cut      = { fg = "#FF5345", bg = "#FF5345" }
+
+# Tab
+tab_active   = { fg = "#111c18", bg = "#C1C497" }
+tab_inactive = { fg = "#C1C497", bg = "#23372B" }
+tab_width    = 1
+
+# Border
+border_symbol = "│"
+border_style  = { fg = "#53685B" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#23372B", bg = "#23372B" }
+
+# Mode
+mode_normal = { fg = "#111c18", bg = "#509475", bold = true }
+mode_select = { fg = "#111c18", bg = "#549e6a", bold = true }
+mode_unset  = { fg = "#111c18", bg = "#FF5345", bold = true }
+
+# Progress
+progress_label  = { fg = "#C1C497", bold = true }
+progress_normal = { fg = "#509475", bg = "#23372B" }
+progress_error  = { fg = "#FF5345", bg = "#23372B" }
+
+# Permissions
+permissions_t = { fg = "#549e6a" }
+permissions_r = { fg = "#E5C736" }
+permissions_w = { fg = "#FF5345" }
+permissions_x = { fg = "#2DD5B7" }
+permissions_s = { fg = "#53685B" }
+
+[input]
+border   = { fg = "#509475" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#509475" }
+active   = { fg = "#D2689C" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#509475" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#23372B" }
+cand            = { fg = "#2DD5B7" }
+rest            = { fg = "#53685B" }
+desc            = { fg = "#D2689C" }
+separator       = "  "
+separator_style = { fg = "#53685B" }
+
+[help]
+on      = { fg = "#D2689C" }
+exec    = { fg = "#2DD5B7" }
+desc    = { fg = "#53685B" }
+hovered = { bg = "#53685B", bold = true }
+footer  = { fg = "#23372B", bg = "#C1C497" }
+
+[filetype]
+rules = [
+	# Fallback
+	{ name = "*", fg = "#C1C497" },
+	{ name = "*/", fg = "#509475" }
+]

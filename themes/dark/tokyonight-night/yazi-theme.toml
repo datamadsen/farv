@@ -1,0 +1,93 @@
+# Tokyo Night theme for Yazi
+# Based on: https://github.com/zatchheems/tokyo-night-alacritty-theme
+
+[flavor]
+use = ""
+
+[manager]
+cwd = { fg = "#7aa2f7" }
+
+# Hovered
+hovered         = { fg = "#1a1b26", bg = "#e0af68" }
+preview_hovered = { underline = true }
+
+# Find
+find_keyword  = { fg = "#e0af68", italic = true }
+find_position = { fg = "#bb9af7", bg = "reset", italic = true }
+
+# Marker
+marker_selected = { fg = "#9ece6a", bg = "#9ece6a" }
+marker_copied   = { fg = "#e0af68", bg = "#e0af68" }
+marker_cut      = { fg = "#f7768e", bg = "#f7768e" }
+
+# Tab
+tab_active   = { fg = "#1a1b26", bg = "#a9b1d6" }
+tab_inactive = { fg = "#a9b1d6", bg = "#32344a" }
+tab_width    = 1
+
+# Border
+border_symbol = "│"
+border_style  = { fg = "#444b6a" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#32344a", bg = "#32344a" }
+
+# Mode
+mode_normal = { fg = "#1a1b26", bg = "#7aa2f7", bold = true }
+mode_select = { fg = "#1a1b26", bg = "#9ece6a", bold = true }
+mode_unset  = { fg = "#1a1b26", bg = "#f7768e", bold = true }
+
+# Progress
+progress_label  = { fg = "#a9b1d6", bold = true }
+progress_normal = { fg = "#7aa2f7", bg = "#32344a" }
+progress_error  = { fg = "#f7768e", bg = "#32344a" }
+
+# Permissions
+permissions_t = { fg = "#9ece6a" }
+permissions_r = { fg = "#e0af68" }
+permissions_w = { fg = "#f7768e" }
+permissions_x = { fg = "#0db9d7" }
+permissions_s = { fg = "#444b6a" }
+
+[input]
+border   = { fg = "#7aa2f7" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#7aa2f7" }
+active   = { fg = "#bb9af7" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#7aa2f7" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#32344a" }
+cand            = { fg = "#0db9d7" }
+rest            = { fg = "#444b6a" }
+desc            = { fg = "#bb9af7" }
+separator       = "  "
+separator_style = { fg = "#444b6a" }
+
+[help]
+on      = { fg = "#bb9af7" }
+exec    = { fg = "#0db9d7" }
+desc    = { fg = "#444b6a" }
+hovered = { bg = "#444b6a", bold = true }
+footer  = { fg = "#32344a", bg = "#a9b1d6" }
+
+[filetype]
+rules = [
+	# Fallback
+	{ name = "*", fg = "#a9b1d6" },
+	{ name = "*/", fg = "#7aa2f7" }
+]
