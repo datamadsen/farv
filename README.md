@@ -186,9 +186,51 @@ set -g default-terminal "tmux-256color"
 set -g mouse on
 set -g base-index 1
 
-# Import farv theme (colors and status bar)
+# Load theme colors from farv
 source-file ~/.config/farv/current/tmux.conf
+
+# Nerdfont characters
+HALF_ROUND_OPEN="#(printf '\uE0B6')"
+HALF_ROUND_CLOSE="#(printf '\uE0B4')"
+
+# Apply theme colors to tmux status bar
+# Basic colors of the Statusbar. "default" = transparent.
+set-option -g status-style bg=default,fg=${TEXT_MAIN}
+
+# Style and set contents on the left section
+set-option -g status-left "#[bg=default,fg=${SESSION_HIGHLIGHT}]#h: #S  "
+
+set-option -g status-right ""
+
+# Style and set content for the inactive windows
+set-option -g window-status-format "\
+ \
+#I\
+#[fg=${WINDOW_INACTIVE_SEP}]:\
+#[fg=default]#W\
+ \
+"
+
+# Style and set content for the active windows
+set-option -g window-status-current-format "\
+#[fg=${WINDOW_ACTIVE_BG},bg=default]${HALF_ROUND_OPEN}\
+#[bg=${WINDOW_ACTIVE_BG},fg=default]#I\
+#[fg=${WINDOW_ACTIVE_SEP}]:\
+#[fg=default]#W\
+#[fg=${WINDOW_ACTIVE_BG},bg=default]${HALF_ROUND_CLOSE}\
+"
+
+# Remove the separator between window list items, as we already have spacing
+# "around" inactive items
+set-option -g window-status-separator ""
 ```
+
+The farv theme file provides these color variables that you can customize in your status bar:
+- `SESSION_HIGHLIGHT` - Hostname and session name color
+- `WINDOW_ACTIVE_BG` - Background for active window
+- `WINDOW_ACTIVE_SEP` - Separator color for active window
+- `WINDOW_INACTIVE_SEP` - Separator color for inactive windows
+- `TEXT_MAIN` - Main text color
 
 ##### Waybar
 
@@ -330,7 +372,7 @@ When you run `farv use tokyonight-night`:
 | Application | Method | Farv Manages | You Manage |
 |------------|--------|--------------|------------|
 | Alacritty | Import | Colors | Font, padding, keybindings |
-| Tmux | Source | Colors, status bar | Keybindings, plugins, behavior |
+| Tmux | Source | Color variables | Status bar, keybindings, plugins, behavior |
 | Neovim | Symlink | Colorscheme plugin | All other plugins, settings |
 | Yazi | Symlink | Theme/colors | File manager settings |
 | Waybar | Import | Color variables | Layout, sizing, components |
