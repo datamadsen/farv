@@ -176,6 +176,28 @@ size = 11
 import = ["~/.config/farv/current/alacritty.toml"]
 ```
 
+##### Mako
+
+Add to `~/.config/mako/config`:
+
+```ini
+# Mako notification daemon configuration
+
+# Include farv theme colors
+include=~/.config/farv/current/mako.conf
+
+# Appearance
+font=CaskaydiaMono Nerd Font Propo 12
+border-size=2
+border-radius=8
+padding=15
+margin=10
+default-timeout=5000
+
+# Format: show app name, summary, and body
+format=<b>%a</b>\n<b>%s</b>\n%b
+```
+
 ##### Tmux
 
 Add to `~/.tmux.conf`:
@@ -374,6 +396,7 @@ When you run `farv use tokyonight-night`:
 | Application | Method | Farv Manages | You Manage |
 |------------|--------|--------------|------------|
 | Alacritty | Import | Colors | Font, padding, keybindings |
+| Mako | Include | Colors | Font, padding, timeouts, format |
 | Tmux | Source | Color variables | Status bar, keybindings, plugins, behavior |
 | Neovim | Symlink | Colorscheme plugin | All other plugins, settings |
 | Yazi | Symlink | Theme/colors | File manager settings |
