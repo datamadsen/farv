@@ -195,10 +195,10 @@ HALF_ROUND_CLOSE="#(printf '\uE0B4')"
 
 # Apply theme colors to tmux status bar
 # Basic colors of the Statusbar. "default" = transparent.
-set-option -g status-style bg=default,fg=${TEXT_MAIN}
+set-option -gF status-style "bg=default,fg=#{@TEXT_MAIN}"
 
 # Style and set contents on the left section
-set-option -g status-left "#[bg=default,fg=${SESSION_HIGHLIGHT}]#h: #S  "
+set-option -g status-left "#[bg=default,fg=#{@SESSION_HIGHLIGHT}]#h: #S  "
 
 set-option -g status-right ""
 
@@ -206,18 +206,18 @@ set-option -g status-right ""
 set-option -g window-status-format "\
  \
 #I\
-#[fg=${WINDOW_INACTIVE_SEP}]:\
+#[fg=#{@WINDOW_INACTIVE_SEP}]:\
 #[fg=default]#W\
  \
 "
 
 # Style and set content for the active windows
 set-option -g window-status-current-format "\
-#[fg=${WINDOW_ACTIVE_BG},bg=default]${HALF_ROUND_OPEN}\
-#[bg=${WINDOW_ACTIVE_BG},fg=default]#I\
-#[fg=${WINDOW_ACTIVE_SEP}]:\
+#[fg=#{@WINDOW_ACTIVE_BG},bg=default]${HALF_ROUND_OPEN}\
+#[bg=#{@WINDOW_ACTIVE_BG},fg=default]#I\
+#[fg=#{@WINDOW_ACTIVE_SEP}]:\
 #[fg=default]#W\
-#[fg=${WINDOW_ACTIVE_BG},bg=default]${HALF_ROUND_CLOSE}\
+#[fg=#{@WINDOW_ACTIVE_BG},bg=default]${HALF_ROUND_CLOSE}\
 "
 
 # Remove the separator between window list items, as we already have spacing
@@ -225,12 +225,14 @@ set-option -g window-status-current-format "\
 set-option -g window-status-separator ""
 ```
 
-The farv theme file provides these color variables that you can customize in your status bar:
-- `SESSION_HIGHLIGHT` - Hostname and session name color
-- `WINDOW_ACTIVE_BG` - Background for active window
-- `WINDOW_ACTIVE_SEP` - Separator color for active window
-- `WINDOW_INACTIVE_SEP` - Separator color for inactive windows
-- `TEXT_MAIN` - Main text color
+The farv theme file provides these tmux user options (set with `set -g @VARIABLE`) that you can use in your status bar:
+- `@SESSION_HIGHLIGHT` - Hostname and session name color
+- `@WINDOW_ACTIVE_BG` - Background for active window
+- `@WINDOW_ACTIVE_SEP` - Separator color for active window
+- `@WINDOW_INACTIVE_SEP` - Separator color for inactive windows
+- `@TEXT_MAIN` - Main text color
+
+Use them in tmux format strings with `#{@VARIABLE}` syntax. For style options that need variable expansion, use the `-F` flag (e.g., `set-option -gF status-style "bg=default,fg=#{@TEXT_MAIN}"`).
 
 ##### Waybar
 
