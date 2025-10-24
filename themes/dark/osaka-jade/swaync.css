@@ -1,0 +1,43 @@
+/*
+ * Osaka Jade Theme - SwayNC Colors
+ * Source: https://github.com/basecamp/omarchy
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(17, 34, 28, 0.95);              /* base: #11221C */
+  --noti-bg: 26, 47, 39;                         /* surface: #1a2f27 */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(17, 34, 28);             /* base: #11221C */
+  --noti-bg-hover: rgb(33, 66, 55);              /* lighter surface */
+  --noti-bg-focus: rgba(33, 66, 55, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(113, 206, 173, 0.3); /* border: #71CEAD */
+
+  /* Close button */
+  --noti-close-bg: rgba(45, 213, 183, 0.8);      /* progress: #2DD5B7 */
+  --noti-close-bg-hover: rgba(113, 206, 173, 0.9); /* border: #71CEAD */
+
+  /* Text colors */
+  --text-color: rgb(230, 216, 186);              /* text: #e6d8ba */
+  --text-color-disabled: rgb(155, 166, 138);     /* muted: #9ba68a */
+
+  /* Selection/accent */
+  --bg-selected: rgb(113, 206, 173);             /* border: #71CEAD */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(17, 34, 28, 0.95);
+@define-color noti-border-color rgba(113, 206, 173, 0.3);
+@define-color noti-bg rgba(26, 47, 39, 0.95);
+@define-color noti-bg-opaque rgb(26, 47, 39);
+@define-color noti-bg-darker rgb(17, 34, 28);
+@define-color noti-bg-hover rgb(33, 66, 55);
+@define-color noti-bg-hover-opaque rgb(33, 66, 55);
+@define-color noti-bg-focus rgba(33, 66, 55, 0.6);
+@define-color noti-close-bg rgba(45, 213, 183, 0.8);
+@define-color noti-close-bg-hover rgba(113, 206, 173, 0.9);
+@define-color text-color rgb(230, 216, 186);
+@define-color text-color-disabled rgb(155, 166, 138);
+@define-color bg-selected rgb(113, 206, 173);

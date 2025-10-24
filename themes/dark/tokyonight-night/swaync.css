@@ -1,0 +1,43 @@
+/*
+ * Tokyo Night Theme - SwayNC Colors
+ * Source: https://github.com/folke/tokyonight.nvim
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(26, 27, 38, 0.95);               /* base: #1a1b26 */
+  --noti-bg: 36, 40, 59;                         /* surface: #24283b */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(26, 27, 38);             /* base: #1a1b26 */
+  --noti-bg-hover: rgb(41, 46, 66);              /* lighter surface */
+  --noti-bg-focus: rgba(41, 46, 66, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(51, 204, 255, 0.3);  /* border: #33ccff */
+
+  /* Close button */
+  --noti-close-bg: rgba(51, 204, 255, 0.8);      /* border: #33ccff */
+  --noti-close-bg-hover: rgba(51, 204, 255, 0.9);
+
+  /* Text colors */
+  --text-color: rgb(205, 214, 244);              /* text: #cdd6f4 */
+  --text-color-disabled: rgb(86, 95, 137);       /* muted: #565f89 */
+
+  /* Selection/accent */
+  --bg-selected: rgb(51, 204, 255);              /* border: #33ccff */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(26, 27, 38, 0.95);
+@define-color noti-border-color rgba(51, 204, 255, 0.3);
+@define-color noti-bg rgba(36, 40, 59, 0.95);
+@define-color noti-bg-opaque rgb(36, 40, 59);
+@define-color noti-bg-darker rgb(26, 27, 38);
+@define-color noti-bg-hover rgb(41, 46, 66);
+@define-color noti-bg-hover-opaque rgb(41, 46, 66);
+@define-color noti-bg-focus rgba(41, 46, 66, 0.6);
+@define-color noti-close-bg rgba(51, 204, 255, 0.8);
+@define-color noti-close-bg-hover rgba(51, 204, 255, 0.9);
+@define-color text-color rgb(205, 214, 244);
+@define-color text-color-disabled rgb(86, 95, 137);
+@define-color bg-selected rgb(51, 204, 255);

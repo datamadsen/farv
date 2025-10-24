@@ -1,0 +1,43 @@
+/*
+ * Gruvbox Light Theme - SwayNC Colors
+ * Source: https://github.com/morhetz/gruvbox
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(251, 241, 199, 0.95);            /* base: #fbf1c7 */
+  --noti-bg: 242, 229, 188;                      /* surface: #f2e5bc */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(235, 219, 178);          /* darker surface */
+  --noti-bg-hover: rgb(213, 196, 161);           /* hover surface */
+  --noti-bg-focus: rgba(213, 196, 161, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(215, 153, 33, 0.3);  /* border: #d79921 */
+
+  /* Close button */
+  --noti-close-bg: rgba(215, 153, 33, 0.8);      /* border: #d79921 */
+  --noti-close-bg-hover: rgba(215, 153, 33, 0.9);
+
+  /* Text colors */
+  --text-color: rgb(60, 56, 54);                 /* text: #3c3836 */
+  --text-color-disabled: rgb(124, 111, 100);     /* muted: #7c6f64 */
+
+  /* Selection/accent */
+  --bg-selected: rgb(215, 153, 33);              /* border: #d79921 */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(251, 241, 199, 0.95);
+@define-color noti-border-color rgba(215, 153, 33, 0.3);
+@define-color noti-bg rgba(242, 229, 188, 0.95);
+@define-color noti-bg-opaque rgb(242, 229, 188);
+@define-color noti-bg-darker rgb(235, 219, 178);
+@define-color noti-bg-hover rgb(213, 196, 161);
+@define-color noti-bg-hover-opaque rgb(213, 196, 161);
+@define-color noti-bg-focus rgba(213, 196, 161, 0.6);
+@define-color noti-close-bg rgba(215, 153, 33, 0.8);
+@define-color noti-close-bg-hover rgba(215, 153, 33, 0.9);
+@define-color text-color rgb(60, 56, 54);
+@define-color text-color-disabled rgb(124, 111, 100);
+@define-color bg-selected rgb(215, 153, 33);

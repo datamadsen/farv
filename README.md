@@ -198,6 +198,51 @@ default-timeout=5000
 format=<b>%a</b>\n<b>%s</b>\n%b
 ```
 
+##### SwayNC
+
+Add to the top of `~/.config/swaync/style.css`:
+
+```css
+/* Import farv-managed theme colors */
+@import url("file:///home/YOUR_USERNAME/.config/farv/current/swaync.css");
+
+:root {
+  /* Color variables overridden by farv theme (see import above) */
+  /* Non-color variables (kept in user config) */
+  --notification-icon-size: 64px;
+  --notification-app-icon-size: calc(var(--notification-icon-size) / 3);
+  --notification-group-icon-size: 32px;
+  --border: 1px solid var(--noti-border-color);
+  --border-radius: 16px;
+  --notification-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.2);
+  --font-size-body: 15px;
+  --font-size-summary: 16px;
+  --hover-tranistion: background 0.15s ease-in-out;
+  --group-collapse-tranistion: opacity 400ms ease-in-out;
+  --hover-transition: var(--hover-tranistion);
+  --group-collapse-transition: var(--group-collapse-tranistion);
+}
+
+/* Rest of your SwayNC styling... */
+```
+
+The farv theme provides these color variables:
+- `--cc-bg` - Control center background
+- `--noti-bg`, `--noti-bg-alpha` - Notification background and opacity
+- `--noti-bg-darker`, `--noti-bg-hover`, `--noti-bg-focus` - Background variants
+- `--noti-border-color` - Border color
+- `--noti-close-bg`, `--noti-close-bg-hover` - Close button colors
+- `--text-color`, `--text-color-disabled` - Text colors
+- `--bg-selected` - Selection/accent color
+
+Your `~/.config/swaync/config.json` stays separate with your notification preferences (timeouts, widgets, positioning, etc.).
+
+To reload SwayNC after theme changes:
+```bash
+swaync-client -rs  # Reload style
+```
+
 ##### Tmux
 
 Add to `~/.tmux.conf`:
@@ -397,6 +442,7 @@ When you run `farv use tokyonight-night`:
 |------------|--------|--------------|------------|
 | Alacritty | Import | Colors | Font, padding, keybindings |
 | Mako | Include | Colors | Font, padding, timeouts, format |
+| SwayNC | Import | Color variables | Layout, timeouts, widgets, behavior |
 | Tmux | Source | Color variables | Status bar, keybindings, plugins, behavior |
 | Neovim | Symlink | Colorscheme plugin | All other plugins, settings |
 | Yazi | Symlink | Theme/colors | File manager settings |

@@ -1,0 +1,43 @@
+/*
+ * Catppuccin Latte Theme - SwayNC Colors
+ * Source: https://github.com/catppuccin/catppuccin
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(239, 241, 245, 0.95);            /* base: #eff1f5 */
+  --noti-bg: 204, 208, 218;                      /* surface: #ccd0da */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(220, 224, 232);          /* border: #dce0e8 */
+  --noti-bg-hover: rgb(188, 192, 204);           /* darker surface */
+  --noti-bg-focus: rgba(188, 192, 204, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(30, 102, 245, 0.3);  /* accent: #1e66f5 */
+
+  /* Close button */
+  --noti-close-bg: rgba(30, 102, 245, 0.8);      /* accent: #1e66f5 */
+  --noti-close-bg-hover: rgba(30, 102, 245, 0.9);
+
+  /* Text colors */
+  --text-color: rgb(76, 79, 105);                /* text: #4c4f69 */
+  --text-color-disabled: rgb(108, 111, 133);     /* muted: #6c6f85 */
+
+  /* Selection/accent */
+  --bg-selected: rgb(30, 102, 245);              /* accent: #1e66f5 */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(239, 241, 245, 0.95);
+@define-color noti-border-color rgba(30, 102, 245, 0.3);
+@define-color noti-bg rgba(204, 208, 218, 0.95);
+@define-color noti-bg-opaque rgb(204, 208, 218);
+@define-color noti-bg-darker rgb(220, 224, 232);
+@define-color noti-bg-hover rgb(188, 192, 204);
+@define-color noti-bg-hover-opaque rgb(188, 192, 204);
+@define-color noti-bg-focus rgba(188, 192, 204, 0.6);
+@define-color noti-close-bg rgba(30, 102, 245, 0.8);
+@define-color noti-close-bg-hover rgba(30, 102, 245, 0.9);
+@define-color text-color rgb(76, 79, 105);
+@define-color text-color-disabled rgb(108, 111, 133);
+@define-color bg-selected rgb(30, 102, 245);

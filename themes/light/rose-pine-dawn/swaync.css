@@ -1,0 +1,44 @@
+/*
+ * Rosé Pine Dawn Theme - SwayNC Colors
+ * Variant: Rosé Pine Dawn
+ * Maintainer: DankChoir
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(250, 244, 237, 0.95);            /* base: #faf4ed */
+  --noti-bg: 255, 250, 243;                      /* surface: #fffaf3 */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(242, 233, 225);          /* overlay: #f2e9e1 */
+  --noti-bg-hover: rgb(223, 218, 217);           /* border: #dfdad9 */
+  --noti-bg-focus: rgba(223, 218, 217, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(86, 148, 159, 0.3);  /* foam: #56949f */
+
+  /* Close button */
+  --noti-close-bg: rgba(86, 148, 159, 0.8);      /* foam: #56949f */
+  --noti-close-bg-hover: rgba(144, 122, 169, 0.9); /* iris: #907aa9 */
+
+  /* Text colors */
+  --text-color: rgb(87, 82, 121);                /* text: #575279 */
+  --text-color-disabled: rgb(152, 147, 165);     /* muted: #9893a5 */
+
+  /* Selection/accent */
+  --bg-selected: rgb(86, 148, 159);              /* foam: #56949f */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(250, 244, 237, 0.95);
+@define-color noti-border-color rgba(86, 148, 159, 0.3);
+@define-color noti-bg rgba(255, 250, 243, 0.95);
+@define-color noti-bg-opaque rgb(255, 250, 243);
+@define-color noti-bg-darker rgb(242, 233, 225);
+@define-color noti-bg-hover rgb(223, 218, 217);
+@define-color noti-bg-hover-opaque rgb(223, 218, 217);
+@define-color noti-bg-focus rgba(223, 218, 217, 0.6);
+@define-color noti-close-bg rgba(86, 148, 159, 0.8);
+@define-color noti-close-bg-hover rgba(144, 122, 169, 0.9);
+@define-color text-color rgb(87, 82, 121);
+@define-color text-color-disabled rgb(152, 147, 165);
+@define-color bg-selected rgb(86, 148, 159);

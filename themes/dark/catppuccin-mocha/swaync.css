@@ -1,0 +1,43 @@
+/*
+ * Catppuccin Mocha Theme - SwayNC Colors
+ * Source: https://github.com/catppuccin/alacritty
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(30, 30, 46, 0.95);               /* base: #1e1e2e */
+  --noti-bg: 49, 50, 68;                         /* surface: #313244 */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(30, 30, 46);             /* base: #1e1e2e */
+  --noti-bg-hover: rgb(69, 71, 90);              /* lighter surface */
+  --noti-bg-focus: rgba(69, 71, 90, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(137, 180, 250, 0.3); /* border: #89b4fa */
+
+  /* Close button */
+  --noti-close-bg: rgba(137, 180, 250, 0.8);     /* border: #89b4fa */
+  --noti-close-bg-hover: rgba(137, 180, 250, 0.9);
+
+  /* Text colors */
+  --text-color: rgb(205, 214, 244);              /* text: #cdd6f4 */
+  --text-color-disabled: rgb(108, 112, 134);     /* muted: #6c7086 */
+
+  /* Selection/accent */
+  --bg-selected: rgb(137, 180, 250);             /* border: #89b4fa */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(30, 30, 46, 0.95);
+@define-color noti-border-color rgba(137, 180, 250, 0.3);
+@define-color noti-bg rgba(49, 50, 68, 0.95);
+@define-color noti-bg-opaque rgb(49, 50, 68);
+@define-color noti-bg-darker rgb(30, 30, 46);
+@define-color noti-bg-hover rgb(69, 71, 90);
+@define-color noti-bg-hover-opaque rgb(69, 71, 90);
+@define-color noti-bg-focus rgba(69, 71, 90, 0.6);
+@define-color noti-close-bg rgba(137, 180, 250, 0.8);
+@define-color noti-close-bg-hover rgba(137, 180, 250, 0.9);
+@define-color text-color rgb(205, 214, 244);
+@define-color text-color-disabled rgb(108, 112, 134);
+@define-color bg-selected rgb(137, 180, 250);

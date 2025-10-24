@@ -1,0 +1,43 @@
+/*
+ * Kanagawa Theme - SwayNC Colors
+ * Source: https://github.com/rebelot/kanagawa.nvim
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(31, 31, 40, 0.95);               /* base: #1f1f28 */
+  --noti-bg: 42, 42, 55;                         /* surface: #2a2a37 */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(31, 31, 40);             /* base: #1f1f28 */
+  --noti-bg-hover: rgb(54, 54, 71);              /* lighter surface */
+  --noti-bg-focus: rgba(54, 54, 71, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(149, 127, 184, 0.3); /* border: #957fb8 */
+
+  /* Close button */
+  --noti-close-bg: rgba(149, 127, 184, 0.8);     /* border: #957fb8 */
+  --noti-close-bg-hover: rgba(149, 127, 184, 0.9);
+
+  /* Text colors */
+  --text-color: rgb(220, 215, 186);              /* text: #dcd7ba */
+  --text-color-disabled: rgb(114, 113, 105);     /* muted: #727169 */
+
+  /* Selection/accent */
+  --bg-selected: rgb(149, 127, 184);             /* border: #957fb8 */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(31, 31, 40, 0.95);
+@define-color noti-border-color rgba(149, 127, 184, 0.3);
+@define-color noti-bg rgba(42, 42, 55, 0.95);
+@define-color noti-bg-opaque rgb(42, 42, 55);
+@define-color noti-bg-darker rgb(31, 31, 40);
+@define-color noti-bg-hover rgb(54, 54, 71);
+@define-color noti-bg-hover-opaque rgb(54, 54, 71);
+@define-color noti-bg-focus rgba(54, 54, 71, 0.6);
+@define-color noti-close-bg rgba(149, 127, 184, 0.8);
+@define-color noti-close-bg-hover rgba(149, 127, 184, 0.9);
+@define-color text-color rgb(220, 215, 186);
+@define-color text-color-disabled rgb(114, 113, 105);
+@define-color bg-selected rgb(149, 127, 184);

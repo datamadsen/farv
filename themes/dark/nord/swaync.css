@@ -1,0 +1,43 @@
+/*
+ * Nord Theme - SwayNC Colors
+ * Source: https://www.nordtheme.com
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(46, 52, 64, 0.95);               /* base: #2e3440 (nord0) */
+  --noti-bg: 59, 66, 82;                         /* surface: #3b4252 (nord1) */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(46, 52, 64);             /* base: #2e3440 (nord0) */
+  --noti-bg-hover: rgb(67, 76, 94);              /* nord2: #434c5e */
+  --noti-bg-focus: rgba(67, 76, 94, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(94, 129, 172, 0.3);  /* border: #5e81ac (nord10) */
+
+  /* Close button */
+  --noti-close-bg: rgba(136, 192, 208, 0.8);     /* nord8: #88c0d0 */
+  --noti-close-bg-hover: rgba(143, 188, 187, 0.9); /* nord7: #8fbcbb */
+
+  /* Text colors */
+  --text-color: rgb(216, 222, 233);              /* text: #d8dee9 (nord4) */
+  --text-color-disabled: rgb(76, 86, 106);       /* muted: #4c566a (nord3) */
+
+  /* Selection/accent */
+  --bg-selected: rgb(94, 129, 172);              /* border: #5e81ac (nord10) */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(46, 52, 64, 0.95);
+@define-color noti-border-color rgba(94, 129, 172, 0.3);
+@define-color noti-bg rgba(59, 66, 82, 0.95);
+@define-color noti-bg-opaque rgb(59, 66, 82);
+@define-color noti-bg-darker rgb(46, 52, 64);
+@define-color noti-bg-hover rgb(67, 76, 94);
+@define-color noti-bg-hover-opaque rgb(67, 76, 94);
+@define-color noti-bg-focus rgba(67, 76, 94, 0.6);
+@define-color noti-close-bg rgba(136, 192, 208, 0.8);
+@define-color noti-close-bg-hover rgba(143, 188, 187, 0.9);
+@define-color text-color rgb(216, 222, 233);
+@define-color text-color-disabled rgb(76, 86, 106);
+@define-color bg-selected rgb(94, 129, 172);

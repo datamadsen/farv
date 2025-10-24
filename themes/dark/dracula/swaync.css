@@ -1,0 +1,43 @@
+/*
+ * Dracula Theme - SwayNC Colors
+ * Source: https://github.com/dracula/dracula-theme
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(40, 42, 54, 0.95);               /* base: #282a36 */
+  --noti-bg: 68, 71, 90;                         /* surface: #44475a */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(40, 42, 54);             /* base: #282a36 */
+  --noti-bg-hover: rgb(98, 114, 164);            /* muted: #6272a4 */
+  --noti-bg-focus: rgba(98, 114, 164, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(189, 147, 249, 0.3); /* border: #bd93f9 */
+
+  /* Close button */
+  --noti-close-bg: rgba(189, 147, 249, 0.8);     /* border: #bd93f9 */
+  --noti-close-bg-hover: rgba(189, 147, 249, 0.9);
+
+  /* Text colors */
+  --text-color: rgb(248, 248, 242);              /* text: #f8f8f2 */
+  --text-color-disabled: rgb(98, 114, 164);      /* muted: #6272a4 */
+
+  /* Selection/accent */
+  --bg-selected: rgb(189, 147, 249);             /* border: #bd93f9 */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(40, 42, 54, 0.95);
+@define-color noti-border-color rgba(189, 147, 249, 0.3);
+@define-color noti-bg rgba(68, 71, 90, 0.95);
+@define-color noti-bg-opaque rgb(68, 71, 90);
+@define-color noti-bg-darker rgb(40, 42, 54);
+@define-color noti-bg-hover rgb(98, 114, 164);
+@define-color noti-bg-hover-opaque rgb(98, 114, 164);
+@define-color noti-bg-focus rgba(98, 114, 164, 0.6);
+@define-color noti-close-bg rgba(189, 147, 249, 0.8);
+@define-color noti-close-bg-hover rgba(189, 147, 249, 0.9);
+@define-color text-color rgb(248, 248, 242);
+@define-color text-color-disabled rgb(98, 114, 164);
+@define-color bg-selected rgb(189, 147, 249);
