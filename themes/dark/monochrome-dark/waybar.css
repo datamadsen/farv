@@ -1,0 +1,14 @@
+/*
+ * Monochrome Dark Theme
+ */
+
+/* Common core colors */
+@define-color base #0a0a0a;
+@define-color text #dadada;
+@define-color surface #2a2a2a;
+@define-color muted #6a6a6a;
+@define-color border #bababa;
+
+/* Legacy aliases */
+@define-color foreground #dadada;
+@define-color background #0a0a0a;

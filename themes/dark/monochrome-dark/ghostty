@@ -1,0 +1,25 @@
+# primary
+background = #0a0a0a
+foreground = #dadada
+cursor-color = #efefef
+cursor-text = #0a0a0a
+
+# normal colors (grayscale)
+palette = 0=#1a1a1a
+palette = 1=#6a6a6a
+palette = 2=#7a7a7a
+palette = 3=#8a8a8a
+palette = 4=#9a9a9a
+palette = 5=#aaaaaa
+palette = 6=#bababa
+palette = 7=#dadada
+
+# bright colors (lighter grays)
+palette = 8=#4a4a4a
+palette = 9=#8a8a8a
+palette = 10=#9a9a9a
+palette = 11=#aaaaaa
+palette = 12=#bababa
+palette = 13=#cacaca
+palette = 14=#dadada
+palette = 15=#efefef

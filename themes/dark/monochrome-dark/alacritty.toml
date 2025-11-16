@@ -1,0 +1,31 @@
+# Colors (Monochrome Dark)
+# A pure monochrome dark theme using only shades of gray
+
+[colors]
+[colors.primary]
+background = '#0a0a0a'
+foreground = '#dadada'
+
+[colors.normal]
+black   = "#1a1a1a"
+red     = "#6a6a6a"
+green   = "#7a7a7a"
+yellow  = "#8a8a8a"
+blue    = "#9a9a9a"
+magenta = "#aaaaaa"
+cyan    = "#bababa"
+white   = "#dadada"
+
+[colors.bright]
+black   = "#4a4a4a"
+red     = "#8a8a8a"
+green   = "#9a9a9a"
+yellow  = "#aaaaaa"
+blue    = "#bababa"
+magenta = "#cacaca"
+cyan    = "#dadada"
+white   = "#efefef"
+
+[colors.cursor]
+text   = "#0a0a0a"
+cursor = "#dadada"

@@ -1,0 +1,6 @@
+/* Image styling for clipboard thumbnails */
+#entry image {
+  margin-right: 10px;
+  border-radius: 4px;
+  -gtk-icon-transform: scale(1);
+}

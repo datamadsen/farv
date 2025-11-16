@@ -1,0 +1,92 @@
+# Monochrome Dark theme for Yazi
+# A pure grayscale theme
+
+[flavor]
+use = ""
+
+[mgr]
+cwd = { fg = "#bababa" }
+
+# Hovered
+hovered         = { fg = "#0a0a0a", bg = "#efefef" }
+preview_hovered = { underline = true }
+
+# Find
+find_keyword  = { fg = "#dadada", italic = true }
+find_position = { fg = "#9a9a9a", bg = "reset", italic = true }
+
+# Marker
+marker_selected = { fg = "#bababa", bg = "#bababa" }
+marker_copied   = { fg = "#dadada", bg = "#dadada" }
+marker_cut      = { fg = "#8a8a8a", bg = "#8a8a8a" }
+
+# Tab
+tab_active   = { fg = "#0a0a0a", bg = "#dadada" }
+tab_inactive = { fg = "#dadada", bg = "#2a2a2a" }
+tab_width    = 1
+
+# Border
+border_symbol = "│"
+border_style  = { fg = "#3a3a3a" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#2a2a2a", bg = "#2a2a2a" }
+
+# Mode
+mode_normal = { fg = "#0a0a0a", bg = "#bababa", bold = true }
+mode_select = { fg = "#0a0a0a", bg = "#dadada", bold = true }
+mode_unset  = { fg = "#0a0a0a", bg = "#8a8a8a", bold = true }
+
+# Progress
+progress_label  = { fg = "#dadada", bold = true }
+progress_normal = { fg = "#bababa", bg = "#2a2a2a" }
+progress_error  = { fg = "#8a8a8a", bg = "#2a2a2a" }
+
+# Permissions
+permissions_t = { fg = "#cacaca" }
+permissions_r = { fg = "#bababa" }
+permissions_w = { fg = "#9a9a9a" }
+permissions_x = { fg = "#ababab" }
+permissions_s = { fg = "#6a6a6a" }
+
+[input]
+border   = { fg = "#bababa" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#bababa" }
+active   = { fg = "#dadada" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#bababa" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#2a2a2a" }
+cand            = { fg = "#bababa" }
+rest            = { fg = "#6a6a6a" }
+desc            = { fg = "#9a9a9a" }
+separator       = "  "
+separator_style = { fg = "#3a3a3a" }
+
+[help]
+on      = { fg = "#9a9a9a" }
+exec    = { fg = "#bababa" }
+desc    = { fg = "#6a6a6a" }
+hovered = { bg = "#3a3a3a", bold = true }
+footer  = { fg = "#2a2a2a", bg = "#dadada" }
+
+[filetype]
+rules = [
+	{ name = "*", fg = "#dadada" },
+	{ name = "*/", fg = "#bababa" }
+]

@@ -1,0 +1,42 @@
+/*
+ * Monochrome Light Theme - SwayNC Colors
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(245, 245, 245, 0.95);        /* base: #f5f5f5 */
+  --noti-bg: 213, 213, 213;                  /* surface: #d5d5d5 */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(245, 245, 245);      /* base: #f5f5f5 */
+  --noti-bg-hover: rgb(197, 197, 197);       /* lighter surface */
+  --noti-bg-focus: rgba(197, 197, 197, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(69, 69, 69, 0.3); /* border: #454545 */
+
+  /* Close button */
+  --noti-close-bg: rgba(69, 69, 69, 0.8);    /* border: #454545 */
+  --noti-close-bg-hover: rgba(16, 16, 16, 0.9);
+
+  /* Text colors */
+  --text-color: rgb(37, 37, 37);             /* text: #252525 */
+  --text-color-disabled: rgb(149, 149, 149); /* muted: #959595 */
+
+  /* Selection/accent */
+  --bg-selected: rgb(69, 69, 69);            /* border: #454545 */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(245, 245, 245, 0.95);
+@define-color noti-border-color rgba(69, 69, 69, 0.3);
+@define-color noti-bg rgba(213, 213, 213, 0.95);
+@define-color noti-bg-opaque rgb(213, 213, 213);
+@define-color noti-bg-darker rgb(245, 245, 245);
+@define-color noti-bg-hover rgb(197, 197, 197);
+@define-color noti-bg-hover-opaque rgb(197, 197, 197);
+@define-color noti-bg-focus rgba(197, 197, 197, 0.6);
+@define-color noti-close-bg rgba(69, 69, 69, 0.8);
+@define-color noti-close-bg-hover rgba(16, 16, 16, 0.9);
+@define-color text-color rgb(37, 37, 37);
+@define-color text-color-disabled rgb(149, 149, 149);
+@define-color bg-selected rgb(69, 69, 69);

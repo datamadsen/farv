@@ -1,0 +1,31 @@
+# Colors (Monochrome Light)
+# A pure monochrome light theme using only shades of gray
+
+[colors]
+[colors.primary]
+background = '#f5f5f5'
+foreground = '#252525'
+
+[colors.normal]
+black   = "#0a0a0a"
+red     = "#959595"
+green   = "#858585"
+yellow  = "#757575"
+blue    = "#656565"
+magenta = "#555555"
+cyan    = "#454545"
+white   = "#252525"
+
+[colors.bright]
+black   = "#b5b5b5"
+red     = "#757575"
+green   = "#656565"
+yellow  = "#555555"
+blue    = "#454545"
+magenta = "#353535"
+cyan    = "#252525"
+white   = "#101010"
+
+[colors.cursor]
+text   = "#f5f5f5"
+cursor = "#252525"

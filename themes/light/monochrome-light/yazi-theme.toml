@@ -1,0 +1,92 @@
+# Monochrome Light theme for Yazi
+# A pure grayscale theme
+
+[flavor]
+use = ""
+
+[mgr]
+cwd = { fg = "#454545" }
+
+# Hovered
+hovered         = { fg = "#f5f5f5", bg = "#101010" }
+preview_hovered = { underline = true }
+
+# Find
+find_keyword  = { fg = "#252525", italic = true }
+find_position = { fg = "#656565", bg = "reset", italic = true }
+
+# Marker
+marker_selected = { fg = "#454545", bg = "#454545" }
+marker_copied   = { fg = "#252525", bg = "#252525" }
+marker_cut      = { fg = "#757575", bg = "#757575" }
+
+# Tab
+tab_active   = { fg = "#f5f5f5", bg = "#252525" }
+tab_inactive = { fg = "#252525", bg = "#d5d5d5" }
+tab_width    = 1
+
+# Border
+border_symbol = "│"
+border_style  = { fg = "#c5c5c5" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#d5d5d5", bg = "#d5d5d5" }
+
+# Mode
+mode_normal = { fg = "#f5f5f5", bg = "#454545", bold = true }
+mode_select = { fg = "#f5f5f5", bg = "#252525", bold = true }
+mode_unset  = { fg = "#f5f5f5", bg = "#757575", bold = true }
+
+# Progress
+progress_label  = { fg = "#252525", bold = true }
+progress_normal = { fg = "#454545", bg = "#d5d5d5" }
+progress_error  = { fg = "#757575", bg = "#d5d5d5" }
+
+# Permissions
+permissions_t = { fg = "#353535" }
+permissions_r = { fg = "#454545" }
+permissions_w = { fg = "#656565" }
+permissions_x = { fg = "#545454" }
+permissions_s = { fg = "#959595" }
+
+[input]
+border   = { fg = "#454545" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#454545" }
+active   = { fg = "#252525" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#454545" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#d5d5d5" }
+cand            = { fg = "#454545" }
+rest            = { fg = "#959595" }
+desc            = { fg = "#656565" }
+separator       = "  "
+separator_style = { fg = "#c5c5c5" }
+
+[help]
+on      = { fg = "#656565" }
+exec    = { fg = "#454545" }
+desc    = { fg = "#959595" }
+hovered = { bg = "#c5c5c5", bold = true }
+footer  = { fg = "#d5d5d5", bg = "#252525" }
+
+[filetype]
+rules = [
+	{ name = "*", fg = "#252525" },
+	{ name = "*/", fg = "#454545" }
+]
