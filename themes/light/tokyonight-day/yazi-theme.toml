@@ -1,0 +1,112 @@
+# Tokyo Night Day theme for Yazi
+# Based on: https://github.com/folke/tokyonight.nvim
+
+[flavor]
+use = ""
+
+[mgr]
+cwd = { fg = "#2e7de9" }
+
+# Hovered
+hovered         = { fg = "#e1e2e7", bg = "#8c6c3e" }
+preview_hovered = { underline = true }
+
+# Find
+find_keyword  = { fg = "#8c6c3e", italic = true }
+find_position = { fg = "#9854f1", bg = "reset", italic = true }
+
+# Marker
+marker_selected = { fg = "#587539", bg = "#587539" }
+marker_copied   = { fg = "#8c6c3e", bg = "#8c6c3e" }
+marker_cut      = { fg = "#f52a65", bg = "#f52a65" }
+
+# Tab
+tab_active   = { fg = "#e1e2e7", bg = "#3760bf" }
+tab_inactive = { fg = "#3760bf", bg = "#c4c8da" }
+tab_width    = 1
+
+# Border
+border_symbol = "│"
+border_style  = { fg = "#a1a6c5" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#c4c8da", bg = "#c4c8da" }
+
+# Mode
+mode_normal = { fg = "#e1e2e7", bg = "#2e7de9", bold = true }
+mode_select = { fg = "#e1e2e7", bg = "#587539", bold = true }
+mode_unset  = { fg = "#e1e2e7", bg = "#f52a65", bold = true }
+
+# Progress
+progress_label  = { fg = "#3760bf", bold = true }
+progress_normal = { fg = "#2e7de9", bg = "#c4c8da" }
+progress_error  = { fg = "#f52a65", bg = "#c4c8da" }
+
+# Permissions
+permissions_t = { fg = "#587539" }
+permissions_r = { fg = "#8c6c3e" }
+permissions_w = { fg = "#f52a65" }
+permissions_x = { fg = "#007197" }
+permissions_s = { fg = "#a8aecb" }
+
+[input]
+border   = { fg = "#2e7de9" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#2e7de9" }
+active   = { fg = "#9854f1" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#2e7de9" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#c4c8da" }
+cand            = { fg = "#007197" }
+rest            = { fg = "#a8aecb" }
+desc            = { fg = "#9854f1" }
+separator       = "  "
+separator_style = { fg = "#a1a6c5" }
+
+[help]
+on      = { fg = "#9854f1" }
+exec    = { fg = "#007197" }
+desc    = { fg = "#a8aecb" }
+hovered = { bg = "#a1a6c5", bold = true }
+footer  = { fg = "#c4c8da", bg = "#3760bf" }
+
+[filetype]
+rules = [
+	# Images
+	{ mime = "image/*", fg = "#b15c00" },
+
+	# Videos
+	{ mime = "video/*", fg = "#8c6c3e" },
+	{ mime = "audio/*", fg = "#8c6c3e" },
+
+	# Archives
+	{ mime = "application/zip",             fg = "#b15c00" },
+	{ mime = "application/gzip",            fg = "#b15c00" },
+	{ mime = "application/x-tar",           fg = "#b15c00" },
+	{ mime = "application/x-bzip",          fg = "#b15c00" },
+	{ mime = "application/x-bzip2",         fg = "#b15c00" },
+	{ mime = "application/x-7z-compressed", fg = "#b15c00" },
+	{ mime = "application/x-rar",           fg = "#b15c00" },
+
+	# Documents
+	{ mime = "application/pdf", fg = "#f52a65" },
+
+	# Fallback
+	{ name = "*", fg = "#3760bf" },
+	{ name = "*/", fg = "#2e7de9" }
+]

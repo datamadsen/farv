@@ -1,0 +1,8 @@
+/* Tokyo Night Day theme colors for waybar */
+
+/* Common core colors */
+@define-color base #e1e2e7;
+@define-color text #3760bf;
+@define-color surface #d0d5e3;
+@define-color muted #848cb5;
+@define-color border #2e7de9;
