@@ -1,0 +1,43 @@
+/*
+ * Everforest Light Theme - SwayNC Colors
+ * Source: https://github.com/sainnhe/everforest
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(253, 246, 227, 0.95);            /* bg0: #fdf6e3 */
+  --noti-bg: 244, 240, 217;                      /* bg1: #f4f0d9 */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(239, 235, 212);          /* bg_dim: #efebd4 */
+  --noti-bg-hover: rgb(230, 226, 204);           /* bg3: #e6e2cc */
+  --noti-bg-focus: rgba(230, 226, 204, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(141, 161, 1, 0.3);   /* green: #8da101 */
+
+  /* Close button */
+  --noti-close-bg: rgba(141, 161, 1, 0.8);       /* green: #8da101 */
+  --noti-close-bg-hover: rgba(141, 161, 1, 0.9);
+
+  /* Text colors */
+  --text-color: rgb(92, 106, 114);               /* fg: #5c6a72 */
+  --text-color-disabled: rgb(130, 145, 129);      /* grey2: #829181 */
+
+  /* Selection/accent */
+  --bg-selected: rgb(141, 161, 1);               /* green: #8da101 */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(253, 246, 227, 0.95);
+@define-color noti-border-color rgba(141, 161, 1, 0.3);
+@define-color noti-bg rgba(244, 240, 217, 0.95);
+@define-color noti-bg-opaque rgb(244, 240, 217);
+@define-color noti-bg-darker rgb(239, 235, 212);
+@define-color noti-bg-hover rgb(230, 226, 204);
+@define-color noti-bg-hover-opaque rgb(230, 226, 204);
+@define-color noti-bg-focus rgba(230, 226, 204, 0.6);
+@define-color noti-close-bg rgba(141, 161, 1, 0.8);
+@define-color noti-close-bg-hover rgba(141, 161, 1, 0.9);
+@define-color text-color rgb(92, 106, 114);
+@define-color text-color-disabled rgb(130, 145, 129);
+@define-color bg-selected rgb(141, 161, 1);

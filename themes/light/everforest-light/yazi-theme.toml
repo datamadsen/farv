@@ -1,0 +1,112 @@
+# Everforest Light theme for Yazi
+# Based on: https://github.com/sainnhe/everforest
+
+[flavor]
+use = ""
+
+[mgr]
+cwd = { fg = "#3a94c5" }
+
+# Hovered
+hovered         = { fg = "#fdf6e3", bg = "#dfa000" }
+preview_hovered = { underline = true }
+
+# Find
+find_keyword  = { fg = "#dfa000", italic = true }
+find_position = { fg = "#df69ba", bg = "reset", italic = true }
+
+# Marker
+marker_selected = { fg = "#8da101", bg = "#8da101" }
+marker_copied   = { fg = "#dfa000", bg = "#dfa000" }
+marker_cut      = { fg = "#f85552", bg = "#f85552" }
+
+# Tab
+tab_active   = { fg = "#fdf6e3", bg = "#5c6a72" }
+tab_inactive = { fg = "#5c6a72", bg = "#e6e2cc" }
+tab_width    = 1
+
+# Border
+border_symbol = "│"
+border_style  = { fg = "#bdc3af" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#e6e2cc", bg = "#e6e2cc" }
+
+# Mode
+mode_normal = { fg = "#fdf6e3", bg = "#3a94c5", bold = true }
+mode_select = { fg = "#fdf6e3", bg = "#8da101", bold = true }
+mode_unset  = { fg = "#fdf6e3", bg = "#f85552", bold = true }
+
+# Progress
+progress_label  = { fg = "#5c6a72", bold = true }
+progress_normal = { fg = "#3a94c5", bg = "#e6e2cc" }
+progress_error  = { fg = "#f85552", bg = "#e6e2cc" }
+
+# Permissions
+permissions_t = { fg = "#8da101" }
+permissions_r = { fg = "#dfa000" }
+permissions_w = { fg = "#f85552" }
+permissions_x = { fg = "#35a77c" }
+permissions_s = { fg = "#a6b0a0" }
+
+[input]
+border   = { fg = "#3a94c5" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#3a94c5" }
+active   = { fg = "#df69ba" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#3a94c5" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#e6e2cc" }
+cand            = { fg = "#35a77c" }
+rest            = { fg = "#a6b0a0" }
+desc            = { fg = "#df69ba" }
+separator       = "  "
+separator_style = { fg = "#bdc3af" }
+
+[help]
+on      = { fg = "#df69ba" }
+exec    = { fg = "#35a77c" }
+desc    = { fg = "#a6b0a0" }
+hovered = { bg = "#bdc3af", bold = true }
+footer  = { fg = "#e6e2cc", bg = "#5c6a72" }
+
+[filetype]
+rules = [
+	# Images
+	{ mime = "image/*", fg = "#f57d26" },
+
+	# Videos
+	{ mime = "video/*", fg = "#dfa000" },
+	{ mime = "audio/*", fg = "#dfa000" },
+
+	# Archives
+	{ mime = "application/zip",             fg = "#f57d26" },
+	{ mime = "application/gzip",            fg = "#f57d26" },
+	{ mime = "application/x-tar",           fg = "#f57d26" },
+	{ mime = "application/x-bzip",          fg = "#f57d26" },
+	{ mime = "application/x-bzip2",         fg = "#f57d26" },
+	{ mime = "application/x-7z-compressed", fg = "#f57d26" },
+	{ mime = "application/x-rar",           fg = "#f57d26" },
+
+	# Documents
+	{ mime = "application/pdf", fg = "#f85552" },
+
+	# Fallback
+	{ name = "*", fg = "#5c6a72" },
+	{ name = "*/", fg = "#3a94c5" }
+]

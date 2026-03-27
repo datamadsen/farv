@@ -1,0 +1,8 @@
+/* Everforest Light theme colors for waybar */
+
+/* Common core colors */
+@define-color base #fdf6e3;
+@define-color text #5c6a72;
+@define-color surface #f4f0d9;
+@define-color muted #829181;
+@define-color border #8da101;
