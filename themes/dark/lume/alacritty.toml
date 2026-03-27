@@ -1,0 +1,29 @@
+# Colors (Lume)
+# Source: https://github.com/danfry1/lume
+
+# Default colors
+[colors.primary]
+background = '#12101e'
+foreground = '#d8d0e4'
+
+# Normal colors
+[colors.normal]
+black   = '#1e1a2c'
+red     = '#c49080'
+green   = '#a0d4a8'
+yellow  = '#c4b080'
+blue    = '#8cc0e0'
+magenta = '#b8a0e0'
+cyan    = '#88c0b8'
+white   = '#b0a8c4'
+
+# Bright colors
+[colors.bright]
+black   = '#302c42'
+red     = '#d0a0b8'
+green   = '#a8d4b8'
+yellow  = '#e8b4a0'
+blue    = '#a0c8e0'
+magenta = '#c4b0e0'
+cyan    = '#a0d4cc'
+white   = '#d8d0e4'

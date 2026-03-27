@@ -1,0 +1,43 @@
+/*
+ * Lume Theme - SwayNC Colors
+ * Source: https://github.com/danfry1/lume
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(18, 16, 30, 0.95);               /* base: #12101e */
+  --noti-bg: 30, 26, 44;                         /* surface 0: #1e1a2c */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(18, 16, 30);             /* base: #12101e */
+  --noti-bg-hover: rgb(38, 34, 54);              /* surface 1: #262236 */
+  --noti-bg-focus: rgba(38, 34, 54, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(184, 160, 224, 0.3); /* lavender: #b8a0e0 */
+
+  /* Close button */
+  --noti-close-bg: rgba(184, 160, 224, 0.8);     /* lavender: #b8a0e0 */
+  --noti-close-bg-hover: rgba(184, 160, 224, 0.9);
+
+  /* Text colors */
+  --text-color: rgb(216, 208, 228);              /* text: #d8d0e4 */
+  --text-color-disabled: rgb(126, 120, 150);     /* comment: #7e7896 */
+
+  /* Selection/accent */
+  --bg-selected: rgb(184, 160, 224);             /* lavender: #b8a0e0 */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(18, 16, 30, 0.95);
+@define-color noti-border-color rgba(184, 160, 224, 0.3);
+@define-color noti-bg rgba(30, 26, 44, 0.95);
+@define-color noti-bg-opaque rgb(30, 26, 44);
+@define-color noti-bg-darker rgb(18, 16, 30);
+@define-color noti-bg-hover rgb(38, 34, 54);
+@define-color noti-bg-hover-opaque rgb(38, 34, 54);
+@define-color noti-bg-focus rgba(38, 34, 54, 0.6);
+@define-color noti-close-bg rgba(184, 160, 224, 0.8);
+@define-color noti-close-bg-hover rgba(184, 160, 224, 0.9);
+@define-color text-color rgb(216, 208, 228);
+@define-color text-color-disabled rgb(126, 120, 150);
+@define-color bg-selected rgb(184, 160, 224);

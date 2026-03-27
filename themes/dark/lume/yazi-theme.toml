@@ -1,0 +1,93 @@
+# Lume theme for Yazi
+# Based on: https://github.com/danfry1/lume
+
+[flavor]
+use = ""
+
+[mgr]
+cwd = { fg = "#8cc0e0" }
+
+# Hovered
+hovered         = { fg = "#12101e", bg = "#c4b080" }
+preview_hovered = { underline = true }
+
+# Find
+find_keyword  = { fg = "#c4b080", italic = true }
+find_position = { fg = "#b8a0e0", bg = "reset", italic = true }
+
+# Marker
+marker_selected = { fg = "#a0d4a8", bg = "#a0d4a8" }
+marker_copied   = { fg = "#c4b080", bg = "#c4b080" }
+marker_cut      = { fg = "#c49080", bg = "#c49080" }
+
+# Tab
+tab_active   = { fg = "#12101e", bg = "#b0a8c4" }
+tab_inactive = { fg = "#b0a8c4", bg = "#1e1a2c" }
+tab_width    = 1
+
+# Border
+border_symbol = "│"
+border_style  = { fg = "#302c42" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#1e1a2c", bg = "#1e1a2c" }
+
+# Mode
+mode_normal = { fg = "#12101e", bg = "#8cc0e0", bold = true }
+mode_select = { fg = "#12101e", bg = "#a0d4a8", bold = true }
+mode_unset  = { fg = "#12101e", bg = "#c49080", bold = true }
+
+# Progress
+progress_label  = { fg = "#b0a8c4", bold = true }
+progress_normal = { fg = "#8cc0e0", bg = "#1e1a2c" }
+progress_error  = { fg = "#c49080", bg = "#1e1a2c" }
+
+# Permissions
+permissions_t = { fg = "#a0d4a8" }
+permissions_r = { fg = "#c4b080" }
+permissions_w = { fg = "#c49080" }
+permissions_x = { fg = "#88c0b8" }
+permissions_s = { fg = "#302c42" }
+
+[input]
+border   = { fg = "#8cc0e0" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#8cc0e0" }
+active   = { fg = "#b8a0e0" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#8cc0e0" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#1e1a2c" }
+cand            = { fg = "#88c0b8" }
+rest            = { fg = "#302c42" }
+desc            = { fg = "#b8a0e0" }
+separator       = "  "
+separator_style = { fg = "#302c42" }
+
+[help]
+on      = { fg = "#b8a0e0" }
+exec    = { fg = "#88c0b8" }
+desc    = { fg = "#302c42" }
+hovered = { bg = "#302c42", bold = true }
+footer  = { fg = "#1e1a2c", bg = "#b0a8c4" }
+
+[filetype]
+rules = [
+	# Fallback
+	{ name = "*", fg = "#b0a8c4" },
+	{ name = "*/", fg = "#8cc0e0" }
+]

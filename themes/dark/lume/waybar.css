@@ -1,0 +1,8 @@
+/* Lume theme colors for waybar */
+
+/* Common core colors */
+@define-color base #12101e;
+@define-color text #d8d0e4;
+@define-color surface #1e1a2c;
+@define-color muted #7e7896;
+@define-color border #b8a0e0;
