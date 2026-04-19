@@ -1,0 +1,43 @@
+/*
+ * Zenbones Light Theme - SwayNC Colors
+ * Source: https://github.com/mcchrish/zenbones.nvim
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(240, 237, 236, 0.95);            /* bg: #F0EDEC */
+  --noti-bg: 203, 217, 227;                      /* surface: #CBD9E3 */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(240, 237, 236);          /* bg: #F0EDEC */
+  --noti-bg-hover: rgb(207, 193, 186);           /* bright black: #CFC1BA */
+  --noti-bg-focus: rgba(207, 193, 186, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(40, 100, 134, 0.3);  /* blue: #286486 */
+
+  /* Close button */
+  --noti-close-bg: rgba(40, 100, 134, 0.8);      /* blue: #286486 */
+  --noti-close-bg-hover: rgba(40, 100, 134, 0.9);
+
+  /* Text colors */
+  --text-color: rgb(44, 54, 60);                 /* fg: #2C363C */
+  --text-color-disabled: rgb(79, 94, 104);        /* bright white: #4F5E68 */
+
+  /* Selection/accent */
+  --bg-selected: rgb(40, 100, 134);              /* blue: #286486 */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(240, 237, 236, 0.95);
+@define-color noti-border-color rgba(40, 100, 134, 0.3);
+@define-color noti-bg rgba(203, 217, 227, 0.95);
+@define-color noti-bg-opaque rgb(203, 217, 227);
+@define-color noti-bg-darker rgb(240, 237, 236);
+@define-color noti-bg-hover rgb(207, 193, 186);
+@define-color noti-bg-hover-opaque rgb(207, 193, 186);
+@define-color noti-bg-focus rgba(207, 193, 186, 0.6);
+@define-color noti-close-bg rgba(40, 100, 134, 0.8);
+@define-color noti-close-bg-hover rgba(40, 100, 134, 0.9);
+@define-color text-color rgb(44, 54, 60);
+@define-color text-color-disabled rgb(79, 94, 104);
+@define-color bg-selected rgb(40, 100, 134);

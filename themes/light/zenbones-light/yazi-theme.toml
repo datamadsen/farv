@@ -1,0 +1,112 @@
+# Zenbones Light theme for Yazi
+# Based on: https://github.com/mcchrish/zenbones.nvim
+
+[flavor]
+use = ""
+
+[mgr]
+cwd = { fg = "#286486" }
+
+# Hovered
+hovered         = { fg = "#F0EDEC", bg = "#944927" }
+preview_hovered = { underline = true }
+
+# Find
+find_keyword  = { fg = "#944927", italic = true }
+find_position = { fg = "#88507D", bg = "reset", italic = true }
+
+# Marker
+marker_selected = { fg = "#4F6C31", bg = "#4F6C31" }
+marker_copied   = { fg = "#944927", bg = "#944927" }
+marker_cut      = { fg = "#A8334C", bg = "#A8334C" }
+
+# Tab
+tab_active   = { fg = "#F0EDEC", bg = "#2C363C" }
+tab_inactive = { fg = "#2C363C", bg = "#CBD9E3" }
+tab_width    = 1
+
+# Border
+border_symbol = "│"
+border_style  = { fg = "#CFC1BA" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#CBD9E3", bg = "#CBD9E3" }
+
+# Mode
+mode_normal = { fg = "#F0EDEC", bg = "#286486", bold = true }
+mode_select = { fg = "#F0EDEC", bg = "#4F6C31", bold = true }
+mode_unset  = { fg = "#F0EDEC", bg = "#A8334C", bold = true }
+
+# Progress
+progress_label  = { fg = "#2C363C", bold = true }
+progress_normal = { fg = "#286486", bg = "#CBD9E3" }
+progress_error  = { fg = "#A8334C", bg = "#CBD9E3" }
+
+# Permissions
+permissions_t = { fg = "#4F6C31" }
+permissions_r = { fg = "#944927" }
+permissions_w = { fg = "#A8334C" }
+permissions_x = { fg = "#3B8992" }
+permissions_s = { fg = "#CFC1BA" }
+
+[input]
+border   = { fg = "#286486" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#286486" }
+active   = { fg = "#88507D" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#286486" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#CBD9E3" }
+cand            = { fg = "#3B8992" }
+rest            = { fg = "#CFC1BA" }
+desc            = { fg = "#88507D" }
+separator       = "  "
+separator_style = { fg = "#CFC1BA" }
+
+[help]
+on      = { fg = "#88507D" }
+exec    = { fg = "#3B8992" }
+desc    = { fg = "#CFC1BA" }
+hovered = { bg = "#CFC1BA", bold = true }
+footer  = { fg = "#CBD9E3", bg = "#2C363C" }
+
+[filetype]
+rules = [
+	# Images
+	{ mime = "image/*", fg = "#944927" },
+
+	# Videos
+	{ mime = "video/*", fg = "#803D1C" },
+	{ mime = "audio/*", fg = "#803D1C" },
+
+	# Archives
+	{ mime = "application/zip",             fg = "#944927" },
+	{ mime = "application/gzip",            fg = "#944927" },
+	{ mime = "application/x-tar",           fg = "#944927" },
+	{ mime = "application/x-bzip",          fg = "#944927" },
+	{ mime = "application/x-bzip2",         fg = "#944927" },
+	{ mime = "application/x-7z-compressed", fg = "#944927" },
+	{ mime = "application/x-rar",           fg = "#944927" },
+
+	# Documents
+	{ mime = "application/pdf", fg = "#A8334C" },
+
+	# Fallback
+	{ name = "*", fg = "#2C363C" },
+	{ name = "*/", fg = "#286486" }
+]

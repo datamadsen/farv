@@ -1,0 +1,8 @@
+/* Zenbones Light theme colors for waybar */
+
+/* Common core colors */
+@define-color base #F0EDEC;
+@define-color text #2C363C;
+@define-color surface #CBD9E3;
+@define-color muted #4F5E68;
+@define-color border #286486;

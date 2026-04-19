@@ -1,0 +1,28 @@
+# Zenbones Light theme
+# Source: https://github.com/mcchrish/zenbones.nvim
+
+# primary
+background = #F0EDEC
+foreground = #2C363C
+cursor-color = #2C363C
+cursor-text = #F0EDEC
+
+# normal colors
+palette = 0=#F0EDEC
+palette = 1=#A8334C
+palette = 2=#4F6C31
+palette = 3=#944927
+palette = 4=#286486
+palette = 5=#88507D
+palette = 6=#3B8992
+palette = 7=#2C363C
+
+# bright colors
+palette = 8=#CFC1BA
+palette = 9=#94253E
+palette = 10=#3F5A22
+palette = 11=#803D1C
+palette = 12=#1D5573
+palette = 13=#7B3B70
+palette = 14=#2B747C
+palette = 15=#4F5E68
