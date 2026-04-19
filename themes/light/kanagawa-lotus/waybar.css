@@ -1,0 +1,8 @@
+/* Kanagawa Lotus theme colors for waybar */
+
+/* Common core colors */
+@define-color base #f2ecbc;
+@define-color text #545464;
+@define-color surface #e5ddb0;
+@define-color muted #8a8980;
+@define-color border #624c83;

@@ -1,0 +1,112 @@
+# Kanagawa Lotus theme for Yazi
+# Based on: https://github.com/rebelot/kanagawa.nvim
+
+[flavor]
+use = ""
+
+[mgr]
+cwd = { fg = "#4d699b" }
+
+# Hovered
+hovered         = { fg = "#f2ecbc", bg = "#cc6d00" }
+preview_hovered = { underline = true }
+
+# Find
+find_keyword  = { fg = "#cc6d00", italic = true }
+find_position = { fg = "#624c83", bg = "reset", italic = true }
+
+# Marker
+marker_selected = { fg = "#6f894e", bg = "#6f894e" }
+marker_copied   = { fg = "#cc6d00", bg = "#cc6d00" }
+marker_cut      = { fg = "#c84053", bg = "#c84053" }
+
+# Tab
+tab_active   = { fg = "#f2ecbc", bg = "#545464" }
+tab_inactive = { fg = "#545464", bg = "#e7dba0" }
+tab_width    = 1
+
+# Border
+border_symbol = "│"
+border_style  = { fg = "#a09cac" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#e7dba0", bg = "#e7dba0" }
+
+# Mode
+mode_normal = { fg = "#f2ecbc", bg = "#4d699b", bold = true }
+mode_select = { fg = "#f2ecbc", bg = "#6f894e", bold = true }
+mode_unset  = { fg = "#f2ecbc", bg = "#c84053", bold = true }
+
+# Progress
+progress_label  = { fg = "#545464", bold = true }
+progress_normal = { fg = "#4d699b", bg = "#e7dba0" }
+progress_error  = { fg = "#c84053", bg = "#e7dba0" }
+
+# Permissions
+permissions_t = { fg = "#6f894e" }
+permissions_r = { fg = "#cc6d00" }
+permissions_w = { fg = "#c84053" }
+permissions_x = { fg = "#597b75" }
+permissions_s = { fg = "#a09cac" }
+
+[input]
+border   = { fg = "#4d699b" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#4d699b" }
+active   = { fg = "#624c83" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#4d699b" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#e7dba0" }
+cand            = { fg = "#597b75" }
+rest            = { fg = "#a09cac" }
+desc            = { fg = "#624c83" }
+separator       = "  "
+separator_style = { fg = "#a09cac" }
+
+[help]
+on      = { fg = "#624c83" }
+exec    = { fg = "#597b75" }
+desc    = { fg = "#a09cac" }
+hovered = { bg = "#a09cac", bold = true }
+footer  = { fg = "#e7dba0", bg = "#545464" }
+
+[filetype]
+rules = [
+	# Images
+	{ mime = "image/*", fg = "#cc6d00" },
+
+	# Videos
+	{ mime = "video/*", fg = "#e98a00" },
+	{ mime = "audio/*", fg = "#e98a00" },
+
+	# Archives
+	{ mime = "application/zip",             fg = "#cc6d00" },
+	{ mime = "application/gzip",            fg = "#cc6d00" },
+	{ mime = "application/x-tar",           fg = "#cc6d00" },
+	{ mime = "application/x-bzip",          fg = "#cc6d00" },
+	{ mime = "application/x-bzip2",         fg = "#cc6d00" },
+	{ mime = "application/x-7z-compressed", fg = "#cc6d00" },
+	{ mime = "application/x-rar",           fg = "#cc6d00" },
+
+	# Documents
+	{ mime = "application/pdf", fg = "#c84053" },
+
+	# Fallback
+	{ name = "*", fg = "#545464" },
+	{ name = "*/", fg = "#4d699b" }
+]

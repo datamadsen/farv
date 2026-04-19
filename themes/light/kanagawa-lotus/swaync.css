@@ -1,0 +1,43 @@
+/*
+ * Kanagawa Lotus Theme - SwayNC Colors
+ * Source: https://github.com/rebelot/kanagawa.nvim
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(242, 236, 188, 0.95);            /* bg: #f2ecbc */
+  --noti-bg: 229, 221, 176;                      /* bg_m1: #e5ddb0 */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(220, 213, 172);          /* bg_dim: #dcd5ac */
+  --noti-bg-hover: rgb(231, 219, 160);           /* bg_p1: #e7dba0 */
+  --noti-bg-focus: rgba(231, 219, 160, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(98, 76, 131, 0.3);   /* violet4: #624c83 */
+
+  /* Close button */
+  --noti-close-bg: rgba(98, 76, 131, 0.8);       /* violet4: #624c83 */
+  --noti-close-bg-hover: rgba(98, 76, 131, 0.9);
+
+  /* Text colors */
+  --text-color: rgb(84, 84, 100);                /* ink1: #545464 */
+  --text-color-disabled: rgb(138, 137, 128);      /* gray3: #8a8980 */
+
+  /* Selection/accent */
+  --bg-selected: rgb(98, 76, 131);               /* violet4: #624c83 */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(242, 236, 188, 0.95);
+@define-color noti-border-color rgba(98, 76, 131, 0.3);
+@define-color noti-bg rgba(229, 221, 176, 0.95);
+@define-color noti-bg-opaque rgb(229, 221, 176);
+@define-color noti-bg-darker rgb(220, 213, 172);
+@define-color noti-bg-hover rgb(231, 219, 160);
+@define-color noti-bg-hover-opaque rgb(231, 219, 160);
+@define-color noti-bg-focus rgba(231, 219, 160, 0.6);
+@define-color noti-close-bg rgba(98, 76, 131, 0.8);
+@define-color noti-close-bg-hover rgba(98, 76, 131, 0.9);
+@define-color text-color rgb(84, 84, 100);
+@define-color text-color-disabled rgb(138, 137, 128);
+@define-color bg-selected rgb(98, 76, 131);
