@@ -1,0 +1,8 @@
+/* Flexoki Light theme colors for waybar */
+
+/* Common core colors */
+@define-color base #FFFCF0;
+@define-color text #100F0F;
+@define-color surface #F2F0E5;
+@define-color muted #878580;
+@define-color border #4385BE;

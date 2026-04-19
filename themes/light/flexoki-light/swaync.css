@@ -1,0 +1,43 @@
+/*
+ * Flexoki Light Theme - SwayNC Colors
+ * Source: https://github.com/kepano/flexoki
+ */
+
+:root {
+  /* Core backgrounds */
+  --cc-bg: rgba(255, 252, 240, 0.95);            /* paper: #FFFCF0 */
+  --noti-bg: 242, 240, 229;                      /* base-50: #F2F0E5 */
+  --noti-bg-alpha: 0.95;
+  --noti-bg-darker: rgb(230, 228, 217);          /* base-100: #E6E4D9 */
+  --noti-bg-hover: rgb(218, 216, 206);           /* base-150: #DAD8CE */
+  --noti-bg-focus: rgba(218, 216, 206, 0.6);
+
+  /* Borders */
+  --noti-border-color: rgba(67, 133, 190, 0.3);  /* blue: #4385BE */
+
+  /* Close button */
+  --noti-close-bg: rgba(67, 133, 190, 0.8);      /* blue: #4385BE */
+  --noti-close-bg-hover: rgba(67, 133, 190, 0.9);
+
+  /* Text colors */
+  --text-color: rgb(16, 15, 15);                 /* black: #100F0F */
+  --text-color-disabled: rgb(135, 133, 128);      /* base-500: #878580 */
+
+  /* Selection/accent */
+  --bg-selected: rgb(67, 133, 190);              /* blue: #4385BE */
+}
+
+/* Fallback @define-color for older CSS themes */
+@define-color cc-bg rgba(255, 252, 240, 0.95);
+@define-color noti-border-color rgba(67, 133, 190, 0.3);
+@define-color noti-bg rgba(242, 240, 229, 0.95);
+@define-color noti-bg-opaque rgb(242, 240, 229);
+@define-color noti-bg-darker rgb(230, 228, 217);
+@define-color noti-bg-hover rgb(218, 216, 206);
+@define-color noti-bg-hover-opaque rgb(218, 216, 206);
+@define-color noti-bg-focus rgba(218, 216, 206, 0.6);
+@define-color noti-close-bg rgba(67, 133, 190, 0.8);
+@define-color noti-close-bg-hover rgba(67, 133, 190, 0.9);
+@define-color text-color rgb(16, 15, 15);
+@define-color text-color-disabled rgb(135, 133, 128);
+@define-color bg-selected rgb(67, 133, 190);

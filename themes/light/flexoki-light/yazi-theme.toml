@@ -1,0 +1,112 @@
+# Flexoki Light theme for Yazi
+# Based on: https://github.com/kepano/flexoki
+
+[flavor]
+use = ""
+
+[mgr]
+cwd = { fg = "#4385BE" }
+
+# Hovered
+hovered         = { fg = "#FFFCF0", bg = "#D0A215" }
+preview_hovered = { underline = true }
+
+# Find
+find_keyword  = { fg = "#D0A215", italic = true }
+find_position = { fg = "#CE5D97", bg = "reset", italic = true }
+
+# Marker
+marker_selected = { fg = "#879A39", bg = "#879A39" }
+marker_copied   = { fg = "#D0A215", bg = "#D0A215" }
+marker_cut      = { fg = "#D14D41", bg = "#D14D41" }
+
+# Tab
+tab_active   = { fg = "#FFFCF0", bg = "#100F0F" }
+tab_inactive = { fg = "#100F0F", bg = "#E6E4D9" }
+tab_width    = 1
+
+# Border
+border_symbol = "│"
+border_style  = { fg = "#B7B5AC" }
+
+# Highlighting
+syntect_theme = ""
+
+[status]
+separator_open  = ""
+separator_close = ""
+separator_style = { fg = "#E6E4D9", bg = "#E6E4D9" }
+
+# Mode
+mode_normal = { fg = "#FFFCF0", bg = "#4385BE", bold = true }
+mode_select = { fg = "#FFFCF0", bg = "#879A39", bold = true }
+mode_unset  = { fg = "#FFFCF0", bg = "#D14D41", bold = true }
+
+# Progress
+progress_label  = { fg = "#100F0F", bold = true }
+progress_normal = { fg = "#4385BE", bg = "#E6E4D9" }
+progress_error  = { fg = "#D14D41", bg = "#E6E4D9" }
+
+# Permissions
+permissions_t = { fg = "#879A39" }
+permissions_r = { fg = "#D0A215" }
+permissions_w = { fg = "#D14D41" }
+permissions_x = { fg = "#3AA99F" }
+permissions_s = { fg = "#B7B5AC" }
+
+[input]
+border   = { fg = "#4385BE" }
+title    = {}
+value    = {}
+selected = { reversed = true }
+
+[select]
+border   = { fg = "#4385BE" }
+active   = { fg = "#CE5D97" }
+inactive = {}
+
+[tasks]
+border  = { fg = "#4385BE" }
+title   = {}
+hovered = { underline = true }
+
+[which]
+mask            = { bg = "#E6E4D9" }
+cand            = { fg = "#3AA99F" }
+rest            = { fg = "#B7B5AC" }
+desc            = { fg = "#CE5D97" }
+separator       = "  "
+separator_style = { fg = "#B7B5AC" }
+
+[help]
+on      = { fg = "#CE5D97" }
+exec    = { fg = "#3AA99F" }
+desc    = { fg = "#B7B5AC" }
+hovered = { bg = "#B7B5AC", bold = true }
+footer  = { fg = "#E6E4D9", bg = "#100F0F" }
+
+[filetype]
+rules = [
+	# Images
+	{ mime = "image/*", fg = "#DA702C" },
+
+	# Videos
+	{ mime = "video/*", fg = "#D0A215" },
+	{ mime = "audio/*", fg = "#D0A215" },
+
+	# Archives
+	{ mime = "application/zip",             fg = "#DA702C" },
+	{ mime = "application/gzip",            fg = "#DA702C" },
+	{ mime = "application/x-tar",           fg = "#DA702C" },
+	{ mime = "application/x-bzip",          fg = "#DA702C" },
+	{ mime = "application/x-bzip2",         fg = "#DA702C" },
+	{ mime = "application/x-7z-compressed", fg = "#DA702C" },
+	{ mime = "application/x-rar",           fg = "#DA702C" },
+
+	# Documents
+	{ mime = "application/pdf", fg = "#D14D41" },
+
+	# Fallback
+	{ name = "*", fg = "#100F0F" },
+	{ name = "*/", fg = "#4385BE" }
+]
