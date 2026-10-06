@@ -88,6 +88,6 @@ footer  = { fg = "#1e1a2c", bg = "#b0a8c4" }
 [filetype]
 rules = [
 	# Fallback
-	{ name = "*", fg = "#b0a8c4" },
-	{ name = "*/", fg = "#8cc0e0" }
+	{ url = "*", fg = "#b0a8c4" },
+	{ url = "*/", fg = "#8cc0e0" }
 ]

@@ -107,6 +107,6 @@ rules = [
 	{ mime = "application/pdf", fg = "#D14D41" },
 
 	# Fallback
-	{ name = "*", fg = "#100F0F" },
-	{ name = "*/", fg = "#4385BE" }
+	{ url = "*", fg = "#100F0F" },
+	{ url = "*/", fg = "#4385BE" }
 ]
